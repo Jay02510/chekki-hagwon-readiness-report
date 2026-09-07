@@ -39,6 +39,7 @@ export default function Results() {
           raw: p.raw,
           maxRaw: p.maxRaw,
           blurb: p.isStrong ? null : p.pillar.weakestBlurb,
+          chekkiNote: p.isStrong ? null : p.pillar.chekkiNote,
         })),
       }),
     });
@@ -91,7 +92,10 @@ export default function Results() {
                 <span className="text-ink/50">{raw}/{maxRaw}</span>
               </div>
               {!isStrong && (
-                <p className="font-body text-sm text-ink/70 leading-relaxed">{pillar.weakestBlurb}</p>
+                <>
+                  <p className="font-body text-sm text-ink/70 leading-relaxed">{pillar.weakestBlurb}</p>
+                  <p className="font-body text-sm text-ink/50 leading-relaxed mt-1">{pillar.chekkiNote}</p>
+                </>
               )}
             </div>
           ))}

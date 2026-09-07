@@ -1,22 +1,44 @@
 export type Option = { label: "A" | "B" | "C" | "D"; text: string; points: number };
 export type Question = { id: string; pillarId: string; prompt: string; options: Option[] };
-export type Pillar = { id: string; name: string; weight: number; weakestBlurb: string };
+export type Pillar = {
+  id: string; name: string; weight: number; weakestBlurb: string;
+  // DRAFT COPY — review before shipping. chekkiFit says whether Chekki's
+  // current product covers this pillar ("covered") or would need a custom
+  // build ("custom"); chekkiNote is the one-liner shown alongside the
+  // weakestBlurb on weak/mid pillars.
+  chekkiFit: "covered" | "custom";
+  chekkiNote: string;
+};
 
 export const pillars: Pillar[] = [
   { id: "parentComm", name: "Parent Communication & Reporting", weight: 1.5,
-    weakestBlurb: "Usually the first thing parents notice — high-visibility fix, and directors consistently underestimate the staff hours recurring manual reports quietly consume." },
+    weakestBlurb: "Usually the first thing parents notice — high-visibility fix, and directors consistently underestimate the staff hours recurring manual reports quietly consume.",
+    chekkiFit: "covered",
+    chekkiNote: "Chekki's automated parent progress reports are built for exactly this." },
   { id: "safety", name: "Safety & Peace of Mind", weight: 1.5,
-    weakestBlurb: "For Korean parents, this is often the single biggest driver of trust and retention — worth fixing even before academic-facing pillars." },
+    weakestBlurb: "For Korean parents, this is often the single biggest driver of trust and retention — worth fixing even before academic-facing pillars.",
+    chekkiFit: "custom",
+    chekkiNote: "Not part of Chekki's core product today — open to scoping a custom build for the right hagwon." },
   { id: "operations", name: "Operations & Admin", weight: 1,
-    weakestBlurb: "Manual re-entry across attendance, billing, and reports is invisible until you add up the hours." },
+    weakestBlurb: "Manual re-entry across attendance, billing, and reports is invisible until you add up the hours.",
+    chekkiFit: "custom",
+    chekkiNote: "Outside Chekki's current scope — a candidate for a custom build if this is your top priority." },
   { id: "marketing", name: "Marketing & Enrollment", weight: 1,
-    weakestBlurb: "If growth depends on word of mouth alone, it's capped by how fast word travels, not by how good the hagwon actually is." },
+    weakestBlurb: "If growth depends on word of mouth alone, it's capped by how fast word travels, not by how good the hagwon actually is.",
+    chekkiFit: "custom",
+    chekkiNote: "Not something Chekki addresses today — open to discussing a custom solution." },
   { id: "teaching", name: "Teaching & Curriculum Personalization", weight: 1,
-    weakestBlurb: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room." },
+    weakestBlurb: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room.",
+    chekkiFit: "covered",
+    chekkiNote: "Chekki's Mistake Vault and AI practice sheets directly target this." },
   { id: "data", name: "Data & Records", weight: 1,
-    weakestBlurb: "If you can't quickly answer \"which students need attention right now,\" you're finding out about problems later than you could be." },
+    weakestBlurb: "If you can't quickly answer \"which students need attention right now,\" you're finding out about problems later than you could be.",
+    chekkiFit: "covered",
+    chekkiNote: "Chekki's per-student analytics and teacher dashboard cover this." },
   { id: "staff", name: "Staff & Culture", weight: 1,
-    weakestBlurb: "Tools don't stick without someone owning adoption — often the real blocker even when other pillars look fine on paper." },
+    weakestBlurb: "Tools don't stick without someone owning adoption — often the real blocker even when other pillars look fine on paper.",
+    chekkiFit: "custom",
+    chekkiNote: "Usually a people/ownership issue more than a tooling one — worth a conversation before assuming it needs a build." },
 ];
 
 export const questions: Question[] = [

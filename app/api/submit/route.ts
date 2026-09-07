@@ -21,7 +21,7 @@ function escapeHtml(value: string): string {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type PillarResult = { name: string; raw: number; maxRaw: number; blurb: string | null };
+type PillarResult = { name: string; raw: number; maxRaw: number; blurb: string | null; chekkiNote: string | null };
 
 function pillarRowsHtml(pillarResults: PillarResult[]): string {
   return pillarResults
@@ -36,6 +36,7 @@ function pillarRowsHtml(pillarResults: PillarResult[]): string {
               </tr>
             </table>
             ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #52525b; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
+            ${p.chekkiNote ? `<p style="margin: 4px 0 0 0; font-size: 12px; color: #a1a1aa; line-height: 1.5;">${escapeHtml(p.chekkiNote)}</p>` : ""}
           </td>
         </tr>`
     )
