@@ -1,16 +1,16 @@
-import { Fraunces, Inter } from "next/font/google";
+import { Bricolage_Grotesque, Onest } from "next/font/google";
 import "./globals.css";
 
-const fraunces = Fraunces({
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
-  weight: ["400", "600"],
-  variable: "--font-fraunces",
+  weight: "variable",
+  variable: "--font-bricolage",
 });
 
-const inter = Inter({
+const onest = Onest({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  variable: "--font-inter",
+  variable: "--font-onest",
 });
 
 export const metadata = {
@@ -20,8 +20,8 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="font-body min-h-screen">
+    <html lang="en" className={`${bricolage.variable} ${onest.variable}`}>
+      <body className="font-body min-h-screen bg-brand-dark text-text-main">
         <main className="max-w-xl mx-auto px-6 py-16">{children}</main>
       </body>
     </html>

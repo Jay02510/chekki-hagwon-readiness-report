@@ -5,15 +5,17 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        paper: "#FAF8F3",
-        ink: "#1C2B22",
-        forest: "#2F5233",
-        amber: "#C08A2E",
-        line: "#D8D2C4",
+        // Matches chekki-ai's locked palette (.tastemaker/style-lock.md) —
+        // dark mode default, one accent (orange), nothing invented here.
+        "brand-dark": "#050505",
+        "brand-card": "#0f1014",
+        "brand-orange": "#f97316",
+        "text-main": "#f4f4f5",
+        "text-muted": "#a1a1aa",
       },
       fontFamily: {
-        display: ["var(--font-fraunces)", "serif"],
-        body: ["var(--font-inter)", "sans-serif"],
+        display: ["var(--font-bricolage)", "sans-serif"],
+        body: ["var(--font-onest)", "sans-serif"],
       },
     },
   },

@@ -53,13 +53,13 @@ export default function Results() {
   if (!result) {
     return (
       <div>
-        <p className="font-display text-2xl text-ink mb-4">No results found</p>
-        <p className="font-body text-ink/80 leading-relaxed mb-8">
+        <p className="font-display font-black text-2xl text-text-main mb-4">No results found</p>
+        <p className="font-body text-text-main/80 leading-relaxed mb-8">
           Looks like you haven't taken the assessment yet, or your answers expired.
         </p>
         <Link
           href="/assessment"
-          className="inline-block bg-forest text-paper font-body px-6 py-3 rounded-sm hover:bg-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+          className="inline-block bg-brand-orange text-black font-body font-semibold px-6 py-3 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
         >
           Take the assessment
         </Link>
@@ -69,32 +69,32 @@ export default function Results() {
 
   return (
     <div>
-      <p className="font-body text-sm text-forest mb-3">Your result</p>
-      <p className="font-display text-6xl text-ink mb-2">{result.weightedTotal}</p>
-      <p className="font-body text-ink/60 mb-8">out of 72</p>
+      <p className="font-body text-sm text-brand-orange mb-3">Your result</p>
+      <p className="font-display font-black text-6xl text-text-main mb-2">{result.weightedTotal}</p>
+      <p className="font-body text-text-muted mb-8">out of 72</p>
 
-      <h1 className="font-display text-3xl text-ink mb-4">{result.band.name}</h1>
-      <p className="font-body text-ink/80 leading-relaxed mb-8">{result.band.blurb}</p>
+      <h1 className="font-display font-black text-3xl text-text-main mb-4">{result.band.name}</h1>
+      <p className="font-body text-text-main/80 leading-relaxed mb-8">{result.band.blurb}</p>
 
-      <div className="border-t border-line pt-6 mb-10">
-        <p className="font-body text-sm text-amber mb-2">Your weakest pillar</p>
-        <p className="font-display text-xl text-ink mb-2">{result.weakestPillar.name}</p>
-        <p className="font-body text-ink/80 leading-relaxed">{result.weakestPillar.weakestBlurb}</p>
+      <div className="border-t border-white/10 pt-6 mb-10">
+        <p className="font-body text-sm text-brand-orange mb-2">Your weakest pillar</p>
+        <p className="font-display font-black text-xl text-text-main mb-2">{result.weakestPillar.name}</p>
+        <p className="font-body text-text-main/80 leading-relaxed">{result.weakestPillar.weakestBlurb}</p>
       </div>
 
-      <div className="border-t border-line pt-6 mb-10">
-        <p className="font-body text-sm text-forest mb-4">All seven pillars</p>
+      <div className="border-t border-white/10 pt-6 mb-10">
+        <p className="font-body text-sm text-brand-orange mb-4">All seven pillars</p>
         <div className="space-y-5">
           {result.pillarResults.map(({ pillar, raw, maxRaw, isStrong }) => (
             <div key={pillar.id}>
-              <div className="flex justify-between font-body text-sm text-ink mb-1">
+              <div className="flex justify-between font-body text-sm text-text-main mb-1">
                 <span>{pillar.name}</span>
-                <span className="text-ink/50">{raw}/{maxRaw}</span>
+                <span className="text-text-muted">{raw}/{maxRaw}</span>
               </div>
               {!isStrong && (
                 <>
-                  <p className="font-body text-sm text-ink/70 leading-relaxed">{pillar.weakestBlurb}</p>
-                  <p className="font-body text-sm text-ink/50 leading-relaxed mt-1">{pillar.chekkiNote}</p>
+                  <p className="font-body text-sm text-text-main/70 leading-relaxed">{pillar.weakestBlurb}</p>
+                  <p className="font-body text-sm text-text-muted leading-relaxed mt-1">{pillar.chekkiNote}</p>
                 </>
               )}
             </div>
@@ -103,27 +103,27 @@ export default function Results() {
       </div>
 
       {!submitted ? (
-        <div className="border-t border-line pt-6">
-          <p className="font-body text-sm text-ink/70 mb-4">
+        <div className="border-t border-white/10 pt-6">
+          <p className="font-body text-sm text-text-main/70 mb-4">
             Want the full breakdown in your inbox? Leave your info and I'll send it over and follow up directly.
           </p>
           <div className="space-y-3 mb-4">
-            <input className="w-full border border-line rounded-sm px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 focus:ring-offset-paper" placeholder="Your name"
+            <input className="w-full bg-brand-card border border-white/10 rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder="Your name"
               value={name} onChange={(e) => setName(e.target.value)} />
-            <input className="w-full border border-line rounded-sm px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 focus:ring-offset-paper" placeholder="Hagwon name"
+            <input className="w-full bg-brand-card border border-white/10 rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder="Hagwon name"
               value={hagwon} onChange={(e) => setHagwon(e.target.value)} />
-            <input type="email" required className="w-full border border-line rounded-sm px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 focus:ring-offset-paper" placeholder="Email (for your report)"
+            <input type="email" required className="w-full bg-brand-card border border-white/10 rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder="Email (for your report)"
               value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input className="w-full border border-line rounded-sm px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-forest focus:ring-offset-2 focus:ring-offset-paper" placeholder="Phone or KakaoTalk ID (optional)"
+            <input className="w-full bg-brand-card border border-white/10 rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder="Phone or KakaoTalk ID (optional)"
               value={contact} onChange={(e) => setContact(e.target.value)} />
           </div>
-          {error && <p className="font-body text-sm text-red-700 mb-3">{error}</p>}
-          <button onClick={submit} disabled={!email} className="bg-forest text-paper font-body px-6 py-3 rounded-sm hover:bg-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50 disabled:cursor-not-allowed">
+          {error && <p className="font-body text-sm text-red-400 mb-3">{error}</p>}
+          <button onClick={submit} disabled={!email} className="bg-brand-orange text-black font-body font-semibold px-6 py-3 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100">
             Email me the full report
           </button>
         </div>
       ) : (
-        <p className="font-body text-forest">Thanks — check your inbox for the full report, and I'll follow up directly.</p>
+        <p className="font-body text-brand-orange">Thanks — check your inbox for the full report, and I'll follow up directly.</p>
       )}
     </div>
   );

@@ -28,13 +28,13 @@ export default function Assessment() {
   return (
     <div>
       <ProgressBar current={step + 1} total={questions.length} />
-      <h2 className="font-display text-2xl text-ink mb-8 leading-snug">{q.prompt}</h2>
+      <h2 className="font-display font-black text-2xl text-text-main mb-8 leading-snug">{q.prompt}</h2>
       <div className="space-y-3">
         {q.options.map((opt) => (
           <button
             key={opt.label}
             onClick={() => choose(opt.label)}
-            className="w-full text-left font-body px-5 py-4 border border-line rounded-sm hover:border-forest hover:bg-forest/5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+            className="w-full text-left font-body px-5 py-4 bg-brand-card border border-white/10 rounded-2xl hover:border-brand-orange/50 transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
           >
             {opt.text}
           </button>

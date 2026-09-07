@@ -28,15 +28,15 @@ function pillarRowsHtml(pillarResults: PillarResult[]): string {
     .map(
       (p) => `
         <tr>
-          <td style="padding: 10px 0; border-top: 1px solid #e4e4e7;">
+          <td style="padding: 10px 0; border-top: 1px solid #27272a;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
               <tr>
-                <td style="font-size: 14px; color: #1C2B22; font-weight: 600;">${escapeHtml(p.name)}</td>
-                <td align="right" style="font-size: 14px; color: #71717a; font-weight: 400;">${p.raw}/${p.maxRaw}</td>
+                <td style="font-size: 14px; color: #f4f4f5; font-weight: 600;">${escapeHtml(p.name)}</td>
+                <td align="right" style="font-size: 14px; color: #a1a1aa; font-weight: 400;">${p.raw}/${p.maxRaw}</td>
               </tr>
             </table>
-            ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #52525b; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
-            ${p.chekkiNote ? `<p style="margin: 4px 0 0 0; font-size: 12px; color: #a1a1aa; line-height: 1.5;">${escapeHtml(p.chekkiNote)}</p>` : ""}
+            ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #d4d4d8; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
+            ${p.chekkiNote ? `<p style="margin: 4px 0 0 0; font-size: 12px; color: #71717a; line-height: 1.5;">${escapeHtml(p.chekkiNote)}</p>` : ""}
           </td>
         </tr>`
     )
@@ -88,17 +88,18 @@ export async function POST(req: NextRequest) {
         to: [email],
         subject: `Your Hagwon AI Readiness report — ${score}/72 (${band})`,
         html: `
-          <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-            <p style="font-size: 13px; color: #2F5233; margin: 0 0 8px 0;">Your Hagwon AI Readiness result</p>
-            <p style="font-size: 40px; font-weight: 600; color: #1C2B22; margin: 0;">${score}<span style="font-size: 16px; color: #71717a;"> / 72</span></p>
-            <h1 style="font-size: 22px; color: #1C2B22; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
-            <p style="font-size: 14px; color: #52525b; line-height: 1.6; margin: 0 0 24px 0;">
+          <div style="font-family: 'Bricolage Grotesque', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #030305; color: #f4f4f5; border-radius: 16px;">
+            <p style="font-size: 20px; font-weight: 900; margin: 0 0 16px 0; color: #ffffff;">Chekki<span style="color: #f97316;">ai</span></p>
+            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0;">Your Hagwon AI Readiness result</p>
+            <p style="font-size: 40px; font-weight: 900; color: #ffffff; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #a1a1aa;"> / 72</span></p>
+            <h1 style="font-size: 22px; color: #ffffff; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
+            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0;">
               Full breakdown by pillar below. Scores below 75% of max include a note on why that pillar matters.
             </p>
             <table style="width: 100%; border-collapse: collapse;">
               ${pillarRowsHtml(pillarResults)}
             </table>
-            <p style="font-size: 13px; color: #a1a1aa; margin-top: 24px;">
+            <p style="font-size: 13px; color: #71717a; margin-top: 24px;">
               This is a quick gut-check based on patterns we see across hagwons, not a formal audit.
             </p>
           </div>
