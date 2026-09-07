@@ -44,7 +44,6 @@ export default function Results() {
           raw: p.raw,
           maxRaw: p.maxRaw,
           blurb: p.isStrong ? null : pick(p.pillar.weakestBlurb, lang),
-          chekkiNote: p.isStrong ? null : pick(p.pillar.chekkiNote, lang),
         })),
       }),
     });
@@ -91,7 +90,6 @@ export default function Results() {
 
       <div className="border-t border-white/10 pt-6 mb-10">
         <p className="font-body text-sm text-brand-orange mb-4">{t.allPillars}</p>
-        <p className="font-body text-sm text-text-main/70 leading-relaxed mb-5">{t.chekkiFitIntro}</p>
         <div className="space-y-5">
           {result.pillarResults.map(({ pillar, raw, maxRaw, isStrong }) => (
             <div key={pillar.id}>
@@ -100,10 +98,7 @@ export default function Results() {
                 <span className="text-text-muted">{raw}/{maxRaw}</span>
               </div>
               {!isStrong && (
-                <>
-                  <p className="font-body text-sm text-text-main/70 leading-relaxed">{pick(pillar.weakestBlurb, lang)}</p>
-                  <p className="font-body text-sm text-text-muted leading-relaxed mt-1">{pick(pillar.chekkiNote, lang)}</p>
-                </>
+                <p className="font-body text-sm text-text-main/70 leading-relaxed">{pick(pillar.weakestBlurb, lang)}</p>
               )}
             </div>
           ))}

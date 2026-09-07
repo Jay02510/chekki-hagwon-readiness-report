@@ -4,12 +4,6 @@ export type Option = { label: "A" | "B" | "C" | "D"; text: Localized; points: nu
 export type Question = { id: string; pillarId: string; prompt: Localized; options: Option[] };
 export type Pillar = {
   id: string; name: Localized; weight: number; weakestBlurb: Localized;
-  // DRAFT COPY — review before shipping. chekkiFit says whether Chekki's
-  // current product covers this pillar ("covered") or would need a custom
-  // build ("custom"); chekkiNote is the one-liner shown alongside the
-  // weakestBlurb on weak/mid pillars.
-  chekkiFit: "covered" | "custom";
-  chekkiNote: Localized;
 };
 
 export const pillars: Pillar[] = [
@@ -17,71 +11,36 @@ export const pillars: Pillar[] = [
     weakestBlurb: {
       en: "Usually the first thing parents notice — high-visibility fix, and directors consistently underestimate the staff hours recurring manual reports quietly consume.",
       ko: "학부모님이 가장 먼저 체감하는 부분이라 눈에 잘 띄는 개선 포인트입니다. 반복되는 수기 리포트 작성에 드는 직원 시간을 원장님들이 실제보다 적게 체감하는 경우가 많습니다.",
-    },
-    chekkiFit: "covered",
-    chekkiNote: {
-      en: "Chekki's automated parent progress reports are built for exactly this.",
-      ko: "학부모 자동 리포트 기능이 바로 이 부분을 위해 만들어졌습니다.",
     } },
   { id: "safety", name: { en: "Safety & Peace of Mind", ko: "안전 및 학부모 안심" }, weight: 1.5,
     weakestBlurb: {
       en: "For Korean parents, this is often the single biggest driver of trust and retention — worth fixing even before academic-facing pillars.",
       ko: "한국 학부모님들에게는 이 부분이 신뢰와 재등록을 좌우하는 가장 큰 요소인 경우가 많습니다. 다른 영역보다 먼저 손볼 가치가 있습니다.",
-    },
-    chekkiFit: "custom",
-    chekkiNote: {
-      en: "Not part of Chekki's core product today — open to scoping a custom build for the right hagwon.",
-      ko: "현재 Chekki의 핵심 기능에는 포함되어 있지 않지만, 필요하신 학원에 맞춰 커스텀 개발을 논의할 수 있습니다.",
     } },
   { id: "operations", name: { en: "Operations & Admin", ko: "운영 및 행정 업무" }, weight: 1,
     weakestBlurb: {
       en: "Manual re-entry across attendance, billing, and reports is invisible until you add up the hours.",
       ko: "출결, 청구, 리포트 사이에서 반복되는 수작업 재입력은 시간을 다 합산해보기 전까지는 잘 드러나지 않습니다.",
-    },
-    chekkiFit: "custom",
-    chekkiNote: {
-      en: "Outside Chekki's current scope — a candidate for a custom build if this is your top priority.",
-      ko: "현재 Chekki의 범위 밖이지만, 가장 우선순위가 높으시다면 커스텀 개발을 검토해볼 수 있습니다.",
     } },
   { id: "marketing", name: { en: "Marketing & Enrollment", ko: "마케팅 및 신입생 모집" }, weight: 1,
     weakestBlurb: {
       en: "If growth depends on word of mouth alone, it's capped by how fast word travels, not by how good the hagwon actually is.",
       ko: "성장이 입소문에만 의존한다면, 학원이 아무리 좋아도 입소문이 퍼지는 속도만큼만 성장할 수밖에 없습니다.",
-    },
-    chekkiFit: "custom",
-    chekkiNote: {
-      en: "Not something Chekki addresses today — open to discussing a custom solution.",
-      ko: "현재 Chekki가 다루는 영역은 아니지만, 맞춤 솔루션에 대해 논의해볼 수 있습니다.",
     } },
   { id: "teaching", name: { en: "Teaching & Curriculum Personalization", ko: "수업 및 맞춤형 커리큘럼" }, weight: 1,
     weakestBlurb: {
       en: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room.",
       ko: "획일화된 교재는 잘하는 학생은 지루해하고, 부진한 학생은 같은 반에서 더 뒤처지게 만드는 원인인 경우가 많습니다.",
-    },
-    chekkiFit: "covered",
-    chekkiNote: {
-      en: "Chekki's Mistake Vault and AI practice sheets directly target this.",
-      ko: "Chekki의 오답노트(Mistake Vault)와 AI 연습 문제가 바로 이 부분을 겨냥한 기능입니다.",
     } },
   { id: "data", name: { en: "Data & Records", ko: "데이터 및 기록 관리" }, weight: 1,
     weakestBlurb: {
       en: "If you can't quickly answer \"which students need attention right now,\" you're finding out about problems later than you could be.",
       ko: "\"지금 당장 관심이 필요한 학생이 누구인지\" 바로 답할 수 없다면, 문제를 파악할 수 있는 시점보다 더 늦게 알게 되는 셈입니다.",
-    },
-    chekkiFit: "covered",
-    chekkiNote: {
-      en: "Chekki's per-student analytics and teacher dashboard cover this.",
-      ko: "Chekki의 학생별 분석과 교사 대시보드가 이 부분을 다루고 있습니다.",
     } },
   { id: "staff", name: { en: "Staff & Culture", ko: "직원 및 조직 문화" }, weight: 1,
     weakestBlurb: {
       en: "Tools don't stick without someone owning adoption — often the real blocker even when other pillars look fine on paper.",
       ko: "누군가 책임지고 도입을 이끌지 않으면 도구는 정착하지 않습니다. 다른 영역이 다 괜찮아 보여도 실제로는 이 부분이 걸림돌인 경우가 많습니다.",
-    },
-    chekkiFit: "custom",
-    chekkiNote: {
-      en: "Usually a people/ownership issue more than a tooling one — worth a conversation before assuming it needs a build.",
-      ko: "대부분 도구보다는 사람과 책임 소재의 문제인 경우가 많습니다. 커스텀 개발이 필요하다고 단정하기 전에 먼저 이야기를 나눠보는 것을 추천드립니다.",
     } },
 ];
 

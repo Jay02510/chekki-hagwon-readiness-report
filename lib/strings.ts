@@ -10,9 +10,7 @@ export const strings = {
     outOf: "out of 72",
     weakestPillarLabel: "Your weakest pillar",
     allPillars: "All seven pillars",
-    chekkiFitIntro:
-      "Chekki's product already covers three of these seven pillars today — parent communication, teaching personalization, and data. The rest are gaps most hagwon software doesn't touch either, and we're open to talking about closing them.",
-    leadIn: "Want the full breakdown in your inbox? Leave your info and I'll send it over and follow up directly.",
+    leadIn: "Want the full breakdown in your inbox — plus how Chekki can help with what you're missing? Leave your info and I'll send it over and follow up directly.",
     namePlaceholder: "Your name",
     hagwonPlaceholder: "Hagwon name",
     emailPlaceholder: "Email (for your report)",
@@ -37,9 +35,7 @@ export const strings = {
     outOf: "72점 만점",
     weakestPillarLabel: "가장 취약한 영역",
     allPillars: "7개 영역 전체 결과",
-    chekkiFitIntro:
-      "Chekki는 이미 7개 영역 중 3개 — 학부모 소통, 맞춤형 수업, 데이터 관리 — 를 제품으로 다루고 있습니다. 나머지는 대부분의 학원 소프트웨어도 다루지 않는 영역으로, 필요하시다면 함께 해결 방법을 논의할 수 있습니다.",
-    leadIn: "전체 리포트를 메일로 받아보시겠어요? 연락처를 남겨주시면 리포트를 보내드리고 직접 연락드리겠습니다.",
+    leadIn: "전체 리포트와 함께, 부족한 부분을 Chekki가 어떻게 도와드릴 수 있는지도 안내해 드릴까요? 연락처를 남겨주시면 리포트를 보내드리고 직접 연락드리겠습니다.",
     namePlaceholder: "이름",
     hagwonPlaceholder: "학원 이름",
     emailPlaceholder: "이메일 (리포트 발송용)",

@@ -47,7 +47,7 @@ function escapeHtml(value: string): string {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type PillarResult = { name: string; raw: number; maxRaw: number; blurb: string | null; chekkiNote: string | null };
+type PillarResult = { name: string; raw: number; maxRaw: number; blurb: string | null };
 
 function pillarRowsHtml(pillarResults: PillarResult[]): string {
   return pillarResults
@@ -62,7 +62,6 @@ function pillarRowsHtml(pillarResults: PillarResult[]): string {
               </tr>
             </table>
             ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #d4d4d8; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
-            ${p.chekkiNote ? `<p style="margin: 4px 0 0 0; font-size: 12px; color: #71717a; line-height: 1.5;">${escapeHtml(p.chekkiNote)}</p>` : ""}
           </td>
         </tr>`
     )
@@ -122,7 +121,7 @@ export async function POST(req: NextRequest) {
             eyebrow: "AI 준비도 진단 결과",
             outOf: " / 72",
             intro: "영역별 상세 결과는 아래를 확인해주세요. 만점의 75% 미만인 영역에는 해당 영역이 왜 중요한지에 대한 설명을 함께 담았습니다.",
-            fitIntro: "Chekki는 이미 7개 영역 중 3개 — 학부모 소통, 맞춤형 수업, 데이터 관리 — 를 제품으로 다루고 있습니다. 나머지는 대부분의 학원 소프트웨어도 다루지 않는 영역으로, 필요하시다면 함께 해결 방법을 논의할 수 있습니다.",
+            fitOutro: "부족한 부분을 Chekki가 어떻게 도와드릴 수 있는지 궁금하시다면, 곧 직접 연락드리고 자세히 안내해 드리겠습니다.",
             footer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
           }
         : {
@@ -130,8 +129,7 @@ export async function POST(req: NextRequest) {
             eyebrow: "Your Hagwon AI Readiness result",
             outOf: " / 72",
             intro: "Full breakdown by pillar below. Scores below 75% of max include a note on why that pillar matters.",
-            fitIntro:
-              "Chekki's product already covers three of these seven pillars today — parent communication, teaching personalization, and data. The rest are gaps most hagwon software doesn't touch either, and we're open to talking about closing them.",
+            fitOutro: "Curious how Chekki can help with what's missing? We'll follow up directly to walk through it.",
             footer: "This is a quick gut-check based on patterns we see across hagwons, not a formal audit.",
           };
 
@@ -145,16 +143,16 @@ export async function POST(req: NextRequest) {
             <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0;">${copy.eyebrow}</p>
             <p style="font-size: 40px; font-weight: 900; color: #ffffff; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #a1a1aa;">${copy.outOf}</span></p>
             <h1 style="font-size: 22px; color: #ffffff; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
-            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin: 0 0 16px 0;">
+            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0;">
               ${copy.intro}
-            </p>
-            <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin: 0 0 24px 0;">
-              ${escapeHtml(copy.fitIntro)}
             </p>
             <table style="width: 100%; border-collapse: collapse;">
               ${pillarRowsHtml(pillarResults)}
             </table>
-            <p style="font-size: 13px; color: #71717a; margin-top: 24px;">
+            <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin-top: 24px;">
+              ${copy.fitOutro}
+            </p>
+            <p style="font-size: 13px; color: #71717a; margin-top: 12px;">
               ${copy.footer}
             </p>
           </div>
