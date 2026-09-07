@@ -7,13 +7,9 @@ export default function Landing() {
       <h1 className="font-display font-black text-4xl leading-tight text-text-main mb-6">
         See how AI-ready your hagwon already is.
       </h1>
-      <p className="font-body text-text-main/80 mb-3 leading-relaxed">
-        You're probably doing more right than you think. Four minutes shows
-        your AI Readiness score, what's already working, and the one change
+      <p className="font-body text-text-main/80 mb-8 leading-relaxed">
+        Four minutes. Your score, what's already working, and the one change
         that would move you furthest ahead.
-      </p>
-      <p className="font-body text-sm text-text-muted mb-8 leading-relaxed">
-        A quick gut-check based on patterns we see across hagwons — not a formal audit.
       </p>
       <Link
         href="/assessment"
