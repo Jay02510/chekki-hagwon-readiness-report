@@ -1,9 +1,9 @@
 export const strings = {
   en: {
-    eyebrow: "Hagwon AI Readiness Index",
-    headline: "See how AI-ready your hagwon already is.",
-    body: "Four minutes. Your score, what's already working, and the one change that would move you furthest ahead.",
-    cta: "Check my AI Readiness score",
+    eyebrow: "Free, 4-minute quiz",
+    headline: "How much of your hagwon still runs by hand?",
+    body: "A quick check on parent updates, attendance, and teaching. Get your score and the first thing to fix.",
+    cta: "Start the quiz",
     questionOf: (current: number, total: number) => `Question ${current} of ${total}`,
     yourResult: "Your result",
     outOf: "out of 72",
@@ -25,10 +25,10 @@ export const strings = {
     takeAssessment: "Take the assessment",
   },
   ko: {
-    eyebrow: "학원 AI 준비도 진단",
-    headline: "우리 학원의 AI 준비도, 지금 바로 확인해보세요.",
-    body: "4분이면 충분합니다. 현재 점수와 잘하고 있는 부분, 그리고 가장 먼저 바꾸면 좋을 한 가지를 알려드립니다.",
-    cta: "AI 준비도 점수 확인하기",
+    eyebrow: "무료 4분 진단",
+    headline: "우리 학원, 아직 수작업으로 돌아가고 있지 않나요?",
+    body: "학부모 소통, 출결, 수업 방식을 4분 만에 점검해보세요. 점수와 가장 먼저 고칠 점을 알려드립니다.",
+    cta: "진단 시작하기",
     questionOf: (current: number, total: number) => `${total}문항 중 ${current}번째`,
     yourResult: "결과",
     outOf: "72점 만점",
