@@ -20,6 +20,21 @@ export const bands: Band[] = [
     blurb: "Data flows automatically, personalization is standard, staff already use AI day to day. The opportunity shifts to using this as a visible differentiator with parents." },
 ];
 
+// Below this ratio (raw points / max possible points) a pillar is treated
+// as weak/mid and shows its "why this matters" blurb on the report; at or
+// above it, the pillar is doing fine and the blurb is skipped so the copy
+// (written in a "this needs fixing" voice) doesn't read oddly next to a
+// strong score.
+const STRONG_RATIO_THRESHOLD = 0.75;
+
+export type PillarResult = {
+  pillar: (typeof pillars)[number];
+  raw: number;
+  maxRaw: number;
+  ratio: number;
+  isStrong: boolean;
+};
+
 export function scoreAssessment(answers: Answers) {
   const byPillar: Record<string, number> = {};
 
@@ -35,12 +50,14 @@ export function scoreAssessment(answers: Answers) {
   let lowestRatio = Infinity;
   let weakestPillarId = pillars[0].id;
   let weakestWeight = -Infinity;
+  const pillarResults: PillarResult[] = [];
 
   for (const pillar of pillars) {
     const raw = byPillar[pillar.id];
     const maxRaw = questions.filter((q) => q.pillarId === pillar.id).length * 4;
     const ratio = raw / maxRaw;
     weightedTotal += raw * pillar.weight;
+    pillarResults.push({ pillar, raw, maxRaw, ratio, isStrong: ratio >= STRONG_RATIO_THRESHOLD });
     // Ties go to the higher-weight pillar (parentComm/safety) since those
     // are the ones worth surfacing for follow-up anyway — not just
     // whichever pillar happens to come first in the array.
@@ -56,5 +73,5 @@ export function scoreAssessment(answers: Answers) {
   const band = bands.find((b) => weightedTotal >= b.min && weightedTotal <= b.max) ?? bands[bands.length - 1];
   const weakestPillar = pillars.find((p) => p.id === weakestPillarId)!;
 
-  return { weightedTotal, band, weakestPillar, byPillar };
+  return { weightedTotal, band, weakestPillar, byPillar, pillarResults };
 }
