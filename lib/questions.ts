@@ -1,157 +1,226 @@
-export type Option = { label: "A" | "B" | "C" | "D"; text: string; points: number };
-export type Question = { id: string; pillarId: string; prompt: string; options: Option[] };
+import type { Localized } from "./i18n";
+
+export type Option = { label: "A" | "B" | "C" | "D"; text: Localized; points: number };
+export type Question = { id: string; pillarId: string; prompt: Localized; options: Option[] };
 export type Pillar = {
-  id: string; name: string; weight: number; weakestBlurb: string;
+  id: string; name: Localized; weight: number; weakestBlurb: Localized;
   // DRAFT COPY — review before shipping. chekkiFit says whether Chekki's
   // current product covers this pillar ("covered") or would need a custom
   // build ("custom"); chekkiNote is the one-liner shown alongside the
   // weakestBlurb on weak/mid pillars.
   chekkiFit: "covered" | "custom";
-  chekkiNote: string;
+  chekkiNote: Localized;
 };
 
 export const pillars: Pillar[] = [
-  { id: "parentComm", name: "Parent Communication & Reporting", weight: 1.5,
-    weakestBlurb: "Usually the first thing parents notice — high-visibility fix, and directors consistently underestimate the staff hours recurring manual reports quietly consume.",
+  { id: "parentComm", name: { en: "Parent Communication & Reporting", ko: "학부모 소통 및 리포트" }, weight: 1.5,
+    weakestBlurb: {
+      en: "Usually the first thing parents notice — high-visibility fix, and directors consistently underestimate the staff hours recurring manual reports quietly consume.",
+      ko: "학부모님이 가장 먼저 체감하는 부분이라 눈에 잘 띄는 개선 포인트입니다. 반복되는 수기 리포트 작성에 드는 직원 시간을 원장님들이 실제보다 적게 체감하는 경우가 많습니다.",
+    },
     chekkiFit: "covered",
-    chekkiNote: "Chekki's automated parent progress reports are built for exactly this." },
-  { id: "safety", name: "Safety & Peace of Mind", weight: 1.5,
-    weakestBlurb: "For Korean parents, this is often the single biggest driver of trust and retention — worth fixing even before academic-facing pillars.",
+    chekkiNote: {
+      en: "Chekki's automated parent progress reports are built for exactly this.",
+      ko: "학부모 자동 리포트 기능이 바로 이 부분을 위해 만들어졌습니다.",
+    } },
+  { id: "safety", name: { en: "Safety & Peace of Mind", ko: "안전 및 학부모 안심" }, weight: 1.5,
+    weakestBlurb: {
+      en: "For Korean parents, this is often the single biggest driver of trust and retention — worth fixing even before academic-facing pillars.",
+      ko: "한국 학부모님들에게는 이 부분이 신뢰와 재등록을 좌우하는 가장 큰 요소인 경우가 많습니다. 다른 영역보다 먼저 손볼 가치가 있습니다.",
+    },
     chekkiFit: "custom",
-    chekkiNote: "Not part of Chekki's core product today — open to scoping a custom build for the right hagwon." },
-  { id: "operations", name: "Operations & Admin", weight: 1,
-    weakestBlurb: "Manual re-entry across attendance, billing, and reports is invisible until you add up the hours.",
+    chekkiNote: {
+      en: "Not part of Chekki's core product today — open to scoping a custom build for the right hagwon.",
+      ko: "현재 Chekki의 핵심 기능에는 포함되어 있지 않지만, 필요하신 학원에 맞춰 커스텀 개발을 논의할 수 있습니다.",
+    } },
+  { id: "operations", name: { en: "Operations & Admin", ko: "운영 및 행정 업무" }, weight: 1,
+    weakestBlurb: {
+      en: "Manual re-entry across attendance, billing, and reports is invisible until you add up the hours.",
+      ko: "출결, 청구, 리포트 사이에서 반복되는 수작업 재입력은 시간을 다 합산해보기 전까지는 잘 드러나지 않습니다.",
+    },
     chekkiFit: "custom",
-    chekkiNote: "Outside Chekki's current scope — a candidate for a custom build if this is your top priority." },
-  { id: "marketing", name: "Marketing & Enrollment", weight: 1,
-    weakestBlurb: "If growth depends on word of mouth alone, it's capped by how fast word travels, not by how good the hagwon actually is.",
+    chekkiNote: {
+      en: "Outside Chekki's current scope — a candidate for a custom build if this is your top priority.",
+      ko: "현재 Chekki의 범위 밖이지만, 가장 우선순위가 높으시다면 커스텀 개발을 검토해볼 수 있습니다.",
+    } },
+  { id: "marketing", name: { en: "Marketing & Enrollment", ko: "마케팅 및 신입생 모집" }, weight: 1,
+    weakestBlurb: {
+      en: "If growth depends on word of mouth alone, it's capped by how fast word travels, not by how good the hagwon actually is.",
+      ko: "성장이 입소문에만 의존한다면, 학원이 아무리 좋아도 입소문이 퍼지는 속도만큼만 성장할 수밖에 없습니다.",
+    },
     chekkiFit: "custom",
-    chekkiNote: "Not something Chekki addresses today — open to discussing a custom solution." },
-  { id: "teaching", name: "Teaching & Curriculum Personalization", weight: 1,
-    weakestBlurb: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room.",
+    chekkiNote: {
+      en: "Not something Chekki addresses today — open to discussing a custom solution.",
+      ko: "현재 Chekki가 다루는 영역은 아니지만, 맞춤 솔루션에 대해 논의해볼 수 있습니다.",
+    } },
+  { id: "teaching", name: { en: "Teaching & Curriculum Personalization", ko: "수업 및 맞춤형 커리큘럼" }, weight: 1,
+    weakestBlurb: {
+      en: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room.",
+      ko: "획일화된 교재는 잘하는 학생은 지루해하고, 부진한 학생은 같은 반에서 더 뒤처지게 만드는 원인인 경우가 많습니다.",
+    },
     chekkiFit: "covered",
-    chekkiNote: "Chekki's Mistake Vault and AI practice sheets directly target this." },
-  { id: "data", name: "Data & Records", weight: 1,
-    weakestBlurb: "If you can't quickly answer \"which students need attention right now,\" you're finding out about problems later than you could be.",
+    chekkiNote: {
+      en: "Chekki's Mistake Vault and AI practice sheets directly target this.",
+      ko: "Chekki의 오답노트(Mistake Vault)와 AI 연습 문제가 바로 이 부분을 겨냥한 기능입니다.",
+    } },
+  { id: "data", name: { en: "Data & Records", ko: "데이터 및 기록 관리" }, weight: 1,
+    weakestBlurb: {
+      en: "If you can't quickly answer \"which students need attention right now,\" you're finding out about problems later than you could be.",
+      ko: "\"지금 당장 관심이 필요한 학생이 누구인지\" 바로 답할 수 없다면, 문제를 파악할 수 있는 시점보다 더 늦게 알게 되는 셈입니다.",
+    },
     chekkiFit: "covered",
-    chekkiNote: "Chekki's per-student analytics and teacher dashboard cover this." },
-  { id: "staff", name: "Staff & Culture", weight: 1,
-    weakestBlurb: "Tools don't stick without someone owning adoption — often the real blocker even when other pillars look fine on paper.",
+    chekkiNote: {
+      en: "Chekki's per-student analytics and teacher dashboard cover this.",
+      ko: "Chekki의 학생별 분석과 교사 대시보드가 이 부분을 다루고 있습니다.",
+    } },
+  { id: "staff", name: { en: "Staff & Culture", ko: "직원 및 조직 문화" }, weight: 1,
+    weakestBlurb: {
+      en: "Tools don't stick without someone owning adoption — often the real blocker even when other pillars look fine on paper.",
+      ko: "누군가 책임지고 도입을 이끌지 않으면 도구는 정착하지 않습니다. 다른 영역이 다 괜찮아 보여도 실제로는 이 부분이 걸림돌인 경우가 많습니다.",
+    },
     chekkiFit: "custom",
-    chekkiNote: "Usually a people/ownership issue more than a tooling one — worth a conversation before assuming it needs a build." },
+    chekkiNote: {
+      en: "Usually a people/ownership issue more than a tooling one — worth a conversation before assuming it needs a build.",
+      ko: "대부분 도구보다는 사람과 책임 소재의 문제인 경우가 많습니다. 커스텀 개발이 필요하다고 단정하기 전에 먼저 이야기를 나눠보는 것을 추천드립니다.",
+    } },
 ];
 
+function opts(a: Localized, b: Localized, c: Localized, d: Localized): Option[] {
+  return [
+    { label: "A", text: a, points: 1 },
+    { label: "B", text: b, points: 2 },
+    { label: "C", text: c, points: 3 },
+    { label: "D", text: d, points: 4 },
+  ];
+}
+
 export const questions: Question[] = [
-  { id: "q1", pillarId: "parentComm", prompt: "How do you currently share student progress updates with parents?",
-    options: [
-      { label: "A", text: "Handwritten notes or occasional phone calls", points: 1 },
-      { label: "B", text: "Texts/KakaoTalk messages written manually by teachers", points: 2 },
-      { label: "C", text: "A shared template or report sent monthly", points: 3 },
-      { label: "D", text: "Automated, personalized reports generated from student data", points: 4 },
-    ]},
-  { id: "q2", pillarId: "parentComm", prompt: "If a parent asks \"how is my child doing compared to last month,\" how fast can you answer with specifics?",
-    options: [
-      { label: "A", text: "We'd need to dig through notes or ask the teacher", points: 1 },
-      { label: "B", text: "We can find it, but it takes a while", points: 2 },
-      { label: "C", text: "We can pull it up in a shared system within minutes", points: 3 },
-      { label: "D", text: "It's already visible on a live parent dashboard", points: 4 },
-    ]},
-  { id: "q3", pillarId: "safety", prompt: "How do parents know when their child has arrived at or left the hagwon?",
-    options: [
-      { label: "A", text: "They don't, unless something goes wrong", points: 1 },
-      { label: "B", text: "A teacher calls or texts if there's an issue", points: 2 },
-      { label: "C", text: "A manual check-in system notifies parents", points: 3 },
-      { label: "D", text: "Automatic real-time arrival/departure notifications", points: 4 },
-    ]},
-  { id: "q4", pillarId: "safety", prompt: "If a parent asks \"did my child make it to class safely today,\" how quickly and confidently can you answer?",
-    options: [
-      { label: "A", text: "We'd have to check attendance sheets or ask around", points: 1 },
-      { label: "B", text: "We can find out, but it takes checking", points: 2 },
-      { label: "C", text: "We can confirm quickly from our system", points: 3 },
-      { label: "D", text: "It's already been automatically confirmed to them", points: 4 },
-    ]},
-  { id: "q5", pillarId: "operations", prompt: "How is attendance tracked?",
-    options: [
-      { label: "A", text: "Paper sign-in sheets", points: 1 },
-      { label: "B", text: "A spreadsheet updated manually", points: 2 },
-      { label: "C", text: "A dedicated attendance app", points: 3 },
-      { label: "D", text: "Automated, with real-time alerts to parents", points: 4 },
-    ]},
-  { id: "q6", pillarId: "operations", prompt: "How are class schedules and makeup classes managed?",
-    options: [
-      { label: "A", text: "Phone calls and manual rebooking", points: 1 },
-      { label: "B", text: "A shared calendar or spreadsheet", points: 2 },
-      { label: "C", text: "Scheduling software", points: 3 },
-      { label: "D", text: "Self-service booking with automatic conflict resolution", points: 4 },
-    ]},
-  { id: "q7", pillarId: "operations", prompt: "How is tuition billing and payment tracking handled?",
-    options: [
-      { label: "A", text: "Manual invoicing or cash, tracked on paper or memory", points: 1 },
-      { label: "B", text: "Spreadsheet tracking with manual reminders", points: 2 },
-      { label: "C", text: "Billing software with automated reminders", points: 3 },
-      { label: "D", text: "Fully automated billing tied to attendance/enrollment", points: 4 },
-    ]},
-  { id: "q8", pillarId: "marketing", prompt: "How do new families typically find and choose your hagwon?",
-    options: [
-      { label: "A", text: "Word of mouth and walk-ins only", points: 1 },
-      { label: "B", text: "Flyers or local ads, plus word of mouth", points: 2 },
-      { label: "C", text: "Active Instagram or Naver Blog presence", points: 3 },
-      { label: "D", text: "A content and referral system that consistently drives inquiries", points: 4 },
-    ]},
-  { id: "q9", pillarId: "marketing", prompt: "What happens when a parent inquires but doesn't enroll right away?",
-    options: [
-      { label: "A", text: "We usually don't follow up", points: 1 },
-      { label: "B", text: "Occasional manual follow-up, if someone remembers", points: 2 },
-      { label: "C", text: "A checklist or process for follow-up", points: 3 },
-      { label: "D", text: "An automated, personalized follow-up sequence", points: 4 },
-    ]},
-  { id: "q10", pillarId: "teaching", prompt: "How is material adjusted for a struggling vs. advanced student in the same class?",
-    options: [
-      { label: "A", text: "It isn't — everyone gets the same material", points: 1 },
-      { label: "B", text: "Teachers adjust informally, based on judgment", points: 2 },
-      { label: "C", text: "We have leveled materials or tracks", points: 3 },
-      { label: "D", text: "Materials are actively tailored per student using performance data", points: 4 },
-    ]},
-  { id: "q11", pillarId: "teaching", prompt: "How do you track and communicate each student's English proficiency progress (reading level, TOEFL Junior, internal benchmark, etc.)?",
-    options: [
-      { label: "A", text: "We don't track this formally", points: 1 },
-      { label: "B", text: "Teachers keep informal notes", points: 2 },
-      { label: "C", text: "We have a standard testing/leveling system", points: 3 },
-      { label: "D", text: "Proficiency is tracked continuously and shown to parents in concrete terms", points: 4 },
-    ]},
-  { id: "q12", pillarId: "teaching", prompt: "Do your teachers use any AI tools for lesson prep, grading, or feedback?",
-    options: [
-      { label: "A", text: "No, everything is done manually", points: 1 },
-      { label: "B", text: "A teacher or two experiments on their own", points: 2 },
-      { label: "C", text: "Some tools are used team-wide, informally", points: 3 },
-      { label: "D", text: "AI tools are a standard, expected part of the workflow", points: 4 },
-    ]},
-  { id: "q13", pillarId: "data", prompt: "Where does most student data live (scores, attendance, notes)?",
-    options: [
-      { label: "A", text: "Paper files", points: 1 },
-      { label: "B", text: "Scattered across each teacher's own spreadsheet or notebook", points: 2 },
-      { label: "C", text: "One shared system, though not fully used", points: 3 },
-      { label: "D", text: "One central system everyone updates and can query", points: 4 },
-    ]},
-  { id: "q14", pillarId: "data", prompt: "If you needed a list of every student whose performance dropped this month, how hard would that be?",
-    options: [
-      { label: "A", text: "Nearly impossible without a lot of manual digging", points: 1 },
-      { label: "B", text: "Possible, but very time-consuming", points: 2 },
-      { label: "C", text: "Doable within a day", points: 3 },
-      { label: "D", text: "A few clicks", points: 4 },
-    ]},
-  { id: "q15", pillarId: "staff", prompt: "When a new tool or process is introduced, how does staff typically respond?",
-    options: [
-      { label: "A", text: "Resistance or reluctance to change", points: 1 },
-      { label: "B", text: "Mixed, depending on the person", points: 2 },
-      { label: "C", text: "Generally open, if it's shown to help", points: 3 },
-      { label: "D", text: "Staff proactively suggest and adopt new tools", points: 4 },
-    ]},
-  { id: "q16", pillarId: "staff", prompt: "Who is responsible for exploring new technology or AI tools at your hagwon?",
-    options: [
-      { label: "A", text: "No one — it isn't really anyone's job", points: 1 },
-      { label: "B", text: "Me (the director), whenever I find time", points: 2 },
-      { label: "C", text: "A staff member has informal ownership of it", points: 3 },
-      { label: "D", text: "It's a defined part of someone's role", points: 4 },
-    ]},
+  { id: "q1", pillarId: "parentComm",
+    prompt: { en: "How do you currently share student progress updates with parents?", ko: "현재 학부모님께 학생의 학습 진도를 어떻게 공유하고 계신가요?" },
+    options: opts(
+      { en: "Handwritten notes or occasional phone calls", ko: "손편지나 가끔 하는 전화통화로 전달합니다" },
+      { en: "Texts/KakaoTalk messages written manually by teachers", ko: "선생님이 직접 문자나 카카오톡으로 보냅니다" },
+      { en: "A shared template or report sent monthly", ko: "매달 공통 양식지를 만들어 보냅니다" },
+      { en: "Automated, personalized reports generated from student data", ko: "학생 데이터를 기반으로 자동 생성된 맞춤 리포트를 보냅니다" },
+    ) },
+  { id: "q2", pillarId: "parentComm",
+    prompt: { en: "If a parent asks \"how is my child doing compared to last month,\" how fast can you answer with specifics?", ko: "\"지난달과 비교해서 우리 아이는 어떤가요\"라는 학부모님 질문에 얼마나 빨리, 구체적으로 답할 수 있나요?" },
+    options: opts(
+      { en: "We'd need to dig through notes or ask the teacher", ko: "메모를 뒤지거나 선생님께 따로 물어봐야 합니다" },
+      { en: "We can find it, but it takes a while", ko: "찾을 수는 있지만 시간이 좀 걸립니다" },
+      { en: "We can pull it up in a shared system within minutes", ko: "공유 시스템에서 몇 분 안에 확인할 수 있습니다" },
+      { en: "It's already visible on a live parent dashboard", ko: "학부모 대시보드에 이미 실시간으로 보입니다" },
+    ) },
+  { id: "q3", pillarId: "safety",
+    prompt: { en: "How do parents know when their child has arrived at or left the hagwon?", ko: "학부모님은 자녀가 학원에 도착하고 하원했는지 어떻게 아시나요?" },
+    options: opts(
+      { en: "They don't, unless something goes wrong", ko: "특별한 일이 없으면 따로 알려드리지 않습니다" },
+      { en: "A teacher calls or texts if there's an issue", ko: "문제가 생기면 선생님이 전화나 문자를 드립니다" },
+      { en: "A manual check-in system notifies parents", ko: "수기 출결 확인 후 학부모님께 알립니다" },
+      { en: "Automatic real-time arrival/departure notifications", ko: "등하원 시 자동으로 실시간 알림이 전송됩니다" },
+    ) },
+  { id: "q4", pillarId: "safety",
+    prompt: { en: "If a parent asks \"did my child make it to class safely today,\" how quickly and confidently can you answer?", ko: "\"오늘 우리 아이가 학원에 잘 도착했나요\"라는 질문에 얼마나 빠르고 확실하게 답할 수 있나요?" },
+    options: opts(
+      { en: "We'd have to check attendance sheets or ask around", ko: "출석부를 확인하거나 여기저기 물어봐야 합니다" },
+      { en: "We can find out, but it takes checking", ko: "확인은 가능하지만 시간이 걸립니다" },
+      { en: "We can confirm quickly from our system", ko: "시스템에서 바로 확인해서 답해드릴 수 있습니다" },
+      { en: "It's already been automatically confirmed to them", ko: "이미 자동으로 확인되어 학부모님께 전달된 상태입니다" },
+    ) },
+  { id: "q5", pillarId: "operations",
+    prompt: { en: "How is attendance tracked?", ko: "출결은 어떻게 관리하고 계신가요?" },
+    options: opts(
+      { en: "Paper sign-in sheets", ko: "종이 출석부에 서명하는 방식입니다" },
+      { en: "A spreadsheet updated manually", ko: "스프레드시트에 수기로 입력합니다" },
+      { en: "A dedicated attendance app", ko: "전용 출결 관리 앱을 사용합니다" },
+      { en: "Automated, with real-time alerts to parents", ko: "자동으로 기록되고 학부모님께 실시간 알림이 갑니다" },
+    ) },
+  { id: "q6", pillarId: "operations",
+    prompt: { en: "How are class schedules and makeup classes managed?", ko: "수업 시간표와 보강 수업은 어떻게 관리하시나요?" },
+    options: opts(
+      { en: "Phone calls and manual rebooking", ko: "전화로 일일이 다시 잡습니다" },
+      { en: "A shared calendar or spreadsheet", ko: "공유 캘린더나 스프레드시트를 사용합니다" },
+      { en: "Scheduling software", ko: "전용 스케줄링 소프트웨어를 사용합니다" },
+      { en: "Self-service booking with automatic conflict resolution", ko: "학부모님이 직접 예약하고 시간 충돌은 자동으로 조정됩니다" },
+    ) },
+  { id: "q7", pillarId: "operations",
+    prompt: { en: "How is tuition billing and payment tracking handled?", ko: "수강료 청구와 납부 관리는 어떻게 하고 계신가요?" },
+    options: opts(
+      { en: "Manual invoicing or cash, tracked on paper or memory", ko: "수기 청구서나 현금으로, 종이나 기억에 의존해 관리합니다" },
+      { en: "Spreadsheet tracking with manual reminders", ko: "스프레드시트로 관리하고 리마인더도 직접 보냅니다" },
+      { en: "Billing software with automated reminders", ko: "청구 소프트웨어를 사용하고 리마인더는 자동으로 갑니다" },
+      { en: "Fully automated billing tied to attendance/enrollment", ko: "출결·등록 현황과 연동되어 청구가 완전히 자동화되어 있습니다" },
+    ) },
+  { id: "q8", pillarId: "marketing",
+    prompt: { en: "How do new families typically find and choose your hagwon?", ko: "신규 학부모님들은 보통 어떻게 우리 학원을 알고 등록을 결정하시나요?" },
+    options: opts(
+      { en: "Word of mouth and walk-ins only", ko: "입소문과 방문 상담이 전부입니다" },
+      { en: "Flyers or local ads, plus word of mouth", ko: "전단지나 지역 광고, 그리고 입소문입니다" },
+      { en: "Active Instagram or Naver Blog presence", ko: "인스타그램이나 네이버 블로그를 활발히 운영합니다" },
+      { en: "A content and referral system that consistently drives inquiries", ko: "콘텐츠와 추천 시스템을 통해 꾸준히 문의가 들어옵니다" },
+    ) },
+  { id: "q9", pillarId: "marketing",
+    prompt: { en: "What happens when a parent inquires but doesn't enroll right away?", ko: "상담만 받고 바로 등록하지 않은 학부모님께는 어떻게 하시나요?" },
+    options: opts(
+      { en: "We usually don't follow up", ko: "대부분 별도로 연락드리지 않습니다" },
+      { en: "Occasional manual follow-up, if someone remembers", ko: "생각나면 가끔 연락드리는 정도입니다" },
+      { en: "A checklist or process for follow-up", ko: "후속 연락을 위한 체크리스트나 절차가 있습니다" },
+      { en: "An automated, personalized follow-up sequence", ko: "자동화된 맞춤형 후속 연락 시퀀스가 있습니다" },
+    ) },
+  { id: "q10", pillarId: "teaching",
+    prompt: { en: "How is material adjusted for a struggling vs. advanced student in the same class?", ko: "같은 반 안에서 학습이 부진한 학생과 우수한 학생의 교재는 어떻게 다르게 적용하시나요?" },
+    options: opts(
+      { en: "It isn't — everyone gets the same material", ko: "따로 구분하지 않고 모두 같은 교재를 사용합니다" },
+      { en: "Teachers adjust informally, based on judgment", ko: "선생님이 그때그때 판단해서 조절합니다" },
+      { en: "We have leveled materials or tracks", ko: "레벨별 교재나 트랙이 마련되어 있습니다" },
+      { en: "Materials are actively tailored per student using performance data", ko: "학생별 성취도 데이터를 바탕으로 교재를 적극적으로 맞춤화합니다" },
+    ) },
+  { id: "q11", pillarId: "teaching",
+    prompt: { en: "How do you track and communicate each student's English proficiency progress (reading level, TOEFL Junior, internal benchmark, etc.)?", ko: "학생별 영어 실력(리딩 레벨, 토플 주니어, 내부 기준 등) 향상 과정을 어떻게 추적하고 학부모님께 전달하시나요?" },
+    options: opts(
+      { en: "We don't track this formally", ko: "따로 공식적으로 추적하지 않습니다" },
+      { en: "Teachers keep informal notes", ko: "선생님이 비공식적으로 메모해 둡니다" },
+      { en: "We have a standard testing/leveling system", ko: "정기적인 테스트나 레벨 측정 시스템이 있습니다" },
+      { en: "Proficiency is tracked continuously and shown to parents in concrete terms", ko: "실력을 지속적으로 추적하고 구체적인 수치로 학부모님께 보여드립니다" },
+    ) },
+  { id: "q12", pillarId: "teaching",
+    prompt: { en: "Do your teachers use any AI tools for lesson prep, grading, or feedback?", ko: "선생님들이 수업 준비, 채점, 피드백에 AI 도구를 사용하고 계신가요?" },
+    options: opts(
+      { en: "No, everything is done manually", ko: "아니요, 모두 수작업으로 합니다" },
+      { en: "A teacher or two experiments on their own", ko: "한두 명이 개인적으로 시도해 보는 정도입니다" },
+      { en: "Some tools are used team-wide, informally", ko: "일부 도구를 팀 전체가 비공식적으로 사용합니다" },
+      { en: "AI tools are a standard, expected part of the workflow", ko: "AI 도구가 업무의 표준적인 일부로 자리 잡았습니다" },
+    ) },
+  { id: "q13", pillarId: "data",
+    prompt: { en: "Where does most student data live (scores, attendance, notes)?", ko: "학생 데이터(성적, 출결, 특이사항 등)는 주로 어디에 보관되나요?" },
+    options: opts(
+      { en: "Paper files", ko: "종이 서류로 보관합니다" },
+      { en: "Scattered across each teacher's own spreadsheet or notebook", ko: "선생님마다 각자의 스프레드시트나 노트에 흩어져 있습니다" },
+      { en: "One shared system, though not fully used", ko: "공유 시스템이 하나 있지만 완전히 활용되지는 않습니다" },
+      { en: "One central system everyone updates and can query", ko: "모두가 업데이트하고 조회할 수 있는 하나의 중앙 시스템이 있습니다" },
+    ) },
+  { id: "q14", pillarId: "data",
+    prompt: { en: "If you needed a list of every student whose performance dropped this month, how hard would that be?", ko: "이번 달 성적이 떨어진 학생 명단을 뽑아야 한다면, 얼마나 어려울까요?" },
+    options: opts(
+      { en: "Nearly impossible without a lot of manual digging", ko: "수작업으로 일일이 찾아야 해서 거의 불가능합니다" },
+      { en: "Possible, but very time-consuming", ko: "가능은 하지만 시간이 매우 많이 걸립니다" },
+      { en: "Doable within a day", ko: "하루 정도면 정리할 수 있습니다" },
+      { en: "A few clicks", ko: "몇 번 클릭이면 바로 나옵니다" },
+    ) },
+  { id: "q15", pillarId: "staff",
+    prompt: { en: "When a new tool or process is introduced, how does staff typically respond?", ko: "새로운 도구나 프로세스를 도입할 때 직원들은 보통 어떻게 반응하시나요?" },
+    options: opts(
+      { en: "Resistance or reluctance to change", ko: "변화에 저항하거나 꺼려합니다" },
+      { en: "Mixed, depending on the person", ko: "사람에 따라 반응이 다릅니다" },
+      { en: "Generally open, if it's shown to help", ko: "도움이 된다고 보여지면 대체로 열려 있습니다" },
+      { en: "Staff proactively suggest and adopt new tools", ko: "직원들이 먼저 새로운 도구를 제안하고 적극적으로 도입합니다" },
+    ) },
+  { id: "q16", pillarId: "staff",
+    prompt: { en: "Who is responsible for exploring new technology or AI tools at your hagwon?", ko: "학원에서 새로운 기술이나 AI 도구를 살펴보는 일은 누구의 역할인가요?" },
+    options: opts(
+      { en: "No one — it isn't really anyone's job", ko: "딱히 담당자가 없습니다" },
+      { en: "Me (the director), whenever I find time", ko: "원장인 제가 시간 날 때마다 합니다" },
+      { en: "A staff member has informal ownership of it", ko: "직원 한 명이 비공식적으로 맡고 있습니다" },
+      { en: "It's a defined part of someone's role", ko: "특정 직원의 정식 업무 역할로 정해져 있습니다" },
+    ) },
 ];

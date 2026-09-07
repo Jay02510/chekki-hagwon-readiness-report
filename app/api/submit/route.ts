@@ -6,6 +6,32 @@ import { adminDb } from "@/lib/firebaseAdmin";
 // Firestore, a report emailed to the submitter, and a lead notification
 // emailed to you.
 
+// Sliding-window limiter, same fallback chekki-ai's api/_lib/rateLimit.ts
+// uses when no Redis env vars are set — in-memory, so it resets per
+// serverless cold start. Fine for this endpoint's traffic; swap in the
+// Upstash-backed version from chekki-ai if this ever needs to survive
+// cold starts / span instances.
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 60 * 60 * 1000;
+const submissionsByIp = new Map<string, number[]>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const windowStart = now - RATE_WINDOW_MS;
+  const timestamps = (submissionsByIp.get(ip) ?? []).filter((t) => t > windowStart);
+  if (timestamps.length >= RATE_LIMIT) {
+    submissionsByIp.set(ip, timestamps);
+    return true;
+  }
+  timestamps.push(now);
+  submissionsByIp.set(ip, timestamps);
+  return false;
+}
+
+function clientIp(req: NextRequest): string {
+  return req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "anonymous";
+}
+
 // Public, unauthenticated input goes straight into an HTML email below —
 // must be escaped so a submitted value can't inject markup/links into an
 // email that looks like it came from Chekki AI (same fix as chekki-ai's
@@ -55,11 +81,17 @@ async function sendEmail(resendKey: string, payload: Record<string, unknown>) {
 }
 
 export async function POST(req: NextRequest) {
+  if (isRateLimited(clientIp(req))) {
+    return NextResponse.json({ ok: false, error: "Too many submissions — try again later." }, { status: 429 });
+  }
+
   const body = await req.json();
-  const { name, hagwon, contact, email, score, band, weakestPillar, pillarResults } = body as {
+  const { name, hagwon, contact, email, score, band, weakestPillar, pillarResults, lang } = body as {
     name: string; hagwon: string; contact: string; email: string;
     score: number; band: string; weakestPillar: string; pillarResults: PillarResult[];
+    lang?: "en" | "ko";
   };
+  const isKo = lang === "ko";
 
   if (!email || !EMAIL_RE.test(email)) {
     return NextResponse.json({ ok: false, error: "A valid email is required." }, { status: 400 });
@@ -83,24 +115,46 @@ export async function POST(req: NextRequest) {
 
   if (resendKey) {
     try {
+      const copy = isKo
+        ? {
+            subject: `학원 AI 준비도 리포트 — ${score}/72 (${band})`,
+            eyebrow: "AI 준비도 진단 결과",
+            outOf: " / 72",
+            intro: "영역별 상세 결과는 아래를 확인해주세요. 만점의 75% 미만인 영역에는 해당 영역이 왜 중요한지에 대한 설명을 함께 담았습니다.",
+            fitIntro: "Chekki는 이미 7개 영역 중 3개 — 학부모 소통, 맞춤형 수업, 데이터 관리 — 를 제품으로 다루고 있습니다. 나머지는 대부분의 학원 소프트웨어도 다루지 않는 영역으로, 필요하시다면 함께 해결 방법을 논의할 수 있습니다.",
+            footer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
+          }
+        : {
+            subject: `Your Hagwon AI Readiness report — ${score}/72 (${band})`,
+            eyebrow: "Your Hagwon AI Readiness result",
+            outOf: " / 72",
+            intro: "Full breakdown by pillar below. Scores below 75% of max include a note on why that pillar matters.",
+            fitIntro:
+              "Chekki's product already covers three of these seven pillars today — parent communication, teaching personalization, and data. The rest are gaps most hagwon software doesn't touch either, and we're open to talking about closing them.",
+            footer: "This is a quick gut-check based on patterns we see across hagwons, not a formal audit.",
+          };
+
       await sendEmail(resendKey, {
         from: fromAddress,
         to: [email],
-        subject: `Your Hagwon AI Readiness report — ${score}/72 (${band})`,
+        subject: copy.subject,
         html: `
           <div style="font-family: 'Bricolage Grotesque', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #030305; color: #f4f4f5; border-radius: 16px;">
             <p style="font-size: 20px; font-weight: 900; margin: 0 0 16px 0; color: #ffffff;">Chekki<span style="color: #f97316;">ai</span></p>
-            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0;">Your Hagwon AI Readiness result</p>
-            <p style="font-size: 40px; font-weight: 900; color: #ffffff; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #a1a1aa;"> / 72</span></p>
+            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0;">${copy.eyebrow}</p>
+            <p style="font-size: 40px; font-weight: 900; color: #ffffff; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #a1a1aa;">${copy.outOf}</span></p>
             <h1 style="font-size: 22px; color: #ffffff; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
-            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0;">
-              Full breakdown by pillar below. Scores below 75% of max include a note on why that pillar matters.
+            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin: 0 0 16px 0;">
+              ${copy.intro}
+            </p>
+            <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin: 0 0 24px 0;">
+              ${escapeHtml(copy.fitIntro)}
             </p>
             <table style="width: 100%; border-collapse: collapse;">
               ${pillarRowsHtml(pillarResults)}
             </table>
             <p style="font-size: 13px; color: #71717a; margin-top: 24px;">
-              This is a quick gut-check based on patterns we see across hagwons, not a formal audit.
+              ${copy.footer}
             </p>
           </div>
         `,

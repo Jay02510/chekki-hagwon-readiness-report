@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { questions } from "@/lib/questions";
 import type { Answers } from "@/lib/scoring";
+import { useLang, pick } from "@/lib/i18n";
 import ProgressBar from "@/components/ProgressBar";
 
 export default function Assessment() {
   const router = useRouter();
+  const { lang } = useLang();
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
 
@@ -28,7 +30,7 @@ export default function Assessment() {
   return (
     <div>
       <ProgressBar current={step + 1} total={questions.length} />
-      <h2 className="font-display font-black text-2xl text-text-main mb-8 leading-snug">{q.prompt}</h2>
+      <h2 className="font-display font-black text-2xl text-text-main mb-8 leading-snug">{pick(q.prompt, lang)}</h2>
       <div className="space-y-3">
         {q.options.map((opt) => (
           <button
@@ -36,7 +38,7 @@ export default function Assessment() {
             onClick={() => choose(opt.label)}
             className="w-full text-left font-body px-5 py-4 bg-brand-card border border-white/10 rounded-2xl hover:border-brand-orange/50 transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
           >
-            {opt.text}
+            {pick(opt.text, lang)}
           </button>
         ))}
       </div>

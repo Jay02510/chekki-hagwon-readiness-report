@@ -1,9 +1,15 @@
+"use client";
+
+import { useLang } from "@/lib/i18n";
+import { strings } from "@/lib/strings";
+
 export default function ProgressBar({ current, total }: { current: number; total: number }) {
+  const { lang } = useLang();
   const pct = Math.round((current / total) * 100);
   return (
     <div className="mb-10">
       <div className="flex justify-between font-body text-xs text-text-muted mb-2">
-        <span>Question {current} of {total}</span>
+        <span>{strings[lang].questionOf(current, total)}</span>
         <span>{pct}%</span>
       </div>
       <div className="h-1 bg-white/10 rounded-full overflow-hidden">

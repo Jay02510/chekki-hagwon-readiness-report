@@ -1,4 +1,6 @@
 import { Bricolage_Grotesque, Onest } from "next/font/google";
+import { LangProvider } from "@/lib/i18n";
+import LangToggle from "@/components/LangToggle";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -22,7 +24,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${bricolage.variable} ${onest.variable}`}>
       <body className="font-body min-h-screen bg-brand-dark text-text-main">
-        <main className="max-w-xl mx-auto px-6 py-16">{children}</main>
+        <main className="max-w-xl mx-auto px-6 py-16">
+          <LangProvider>
+            <LangToggle />
+            {children}
+          </LangProvider>
+        </main>
       </body>
     </html>
   );
