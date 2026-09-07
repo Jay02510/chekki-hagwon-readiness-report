@@ -29,10 +29,12 @@ function pillarRowsHtml(pillarResults: PillarResult[]): string {
       (p) => `
         <tr>
           <td style="padding: 10px 0; border-top: 1px solid #e4e4e7;">
-            <div style="display: flex; justify-content: space-between; font-size: 14px; color: #1C2B22; font-weight: 600;">
-              <span>${escapeHtml(p.name)}</span>
-              <span style="color: #71717a; font-weight: 400;">${p.raw}/${p.maxRaw}</span>
-            </div>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
+              <tr>
+                <td style="font-size: 14px; color: #1C2B22; font-weight: 600;">${escapeHtml(p.name)}</td>
+                <td align="right" style="font-size: 14px; color: #71717a; font-weight: 400;">${p.raw}/${p.maxRaw}</td>
+              </tr>
+            </table>
             ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #52525b; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
           </td>
         </tr>`
