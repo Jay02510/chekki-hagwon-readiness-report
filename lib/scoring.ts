@@ -34,15 +34,20 @@ export function scoreAssessment(answers: Answers) {
   let weightedTotal = 0;
   let lowestRatio = Infinity;
   let weakestPillarId = pillars[0].id;
+  let weakestWeight = -Infinity;
 
   for (const pillar of pillars) {
     const raw = byPillar[pillar.id];
     const maxRaw = questions.filter((q) => q.pillarId === pillar.id).length * 4;
     const ratio = raw / maxRaw;
     weightedTotal += raw * pillar.weight;
-    if (ratio < lowestRatio) {
+    // Ties go to the higher-weight pillar (parentComm/safety) since those
+    // are the ones worth surfacing for follow-up anyway — not just
+    // whichever pillar happens to come first in the array.
+    if (ratio < lowestRatio || (ratio === lowestRatio && pillar.weight > weakestWeight)) {
       lowestRatio = ratio;
       weakestPillarId = pillar.id;
+      weakestWeight = pillar.weight;
     }
   }
 

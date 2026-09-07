@@ -7,10 +7,13 @@ export default function Landing() {
       <h1 className="font-display text-4xl leading-tight text-ink mb-6">
         Where does your hagwon actually stand today?
       </h1>
-      <p className="font-body text-ink/80 mb-8 leading-relaxed">
+      <p className="font-body text-ink/80 mb-3 leading-relaxed">
         Sixteen questions about how you run things now — reporting, attendance,
         marketing, safety. Takes about four minutes. At the end you'll get a
         score and a clear read on where to focus first.
+      </p>
+      <p className="font-body text-sm text-ink/50 mb-8 leading-relaxed">
+        A quick gut-check based on patterns we see across hagwons — not a formal audit.
       </p>
       <Link
         href="/assessment"
