@@ -15,6 +15,7 @@ export default function Results() {
   const [hagwon, setHagwon] = useState("");
   const [contact, setContact] = useState("");
   const [email, setEmail] = useState("");
+  const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -34,7 +35,7 @@ export default function Results() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name, hagwon, contact, email, lang,
+        name, hagwon, contact, email, feedback, lang,
         score: result.weightedTotal,
         band: pick(result.band.name, lang),
         weakestPillar: pick(result.weakestPillar.name, lang),
@@ -121,6 +122,8 @@ export default function Results() {
               value={email} onChange={(e) => setEmail(e.target.value)} />
             <input className="w-full bg-brand-card border border-white/10 rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder={t.contactPlaceholder}
               value={contact} onChange={(e) => setContact(e.target.value)} />
+            <textarea className="w-full bg-brand-card border border-white/10 rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder={t.feedbackPlaceholder} rows={3}
+              value={feedback} onChange={(e) => setFeedback(e.target.value)} />
           </div>
           {error && <p className="font-body text-sm text-red-400 mb-3">{error}</p>}
           <button onClick={submit} disabled={!email} className="bg-brand-orange text-black font-body font-semibold px-6 py-3 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100">

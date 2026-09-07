@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { questions } from "@/lib/questions";
 import type { Answers } from "@/lib/scoring";
 import { useLang, pick } from "@/lib/i18n";
+import { strings } from "@/lib/strings";
 import ProgressBar from "@/components/ProgressBar";
 
 export default function Assessment() {
@@ -42,6 +43,7 @@ export default function Assessment() {
           </button>
         ))}
       </div>
+      <p className="font-body text-xs text-text-muted mt-4">{strings[lang].noneMatchHint}</p>
     </div>
   );
 }

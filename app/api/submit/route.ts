@@ -86,8 +86,8 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, hagwon, contact, email, score, band, weakestPillar, pillarResults, lang } = body as {
-    name: string; hagwon: string; contact: string; email: string;
+  const { name, hagwon, contact, email, feedback, score, band, weakestPillar, pillarResults, lang } = body as {
+    name: string; hagwon: string; contact: string; email: string; feedback?: string;
     score: number; band: string; weakestPillar: string; pillarResults: PillarResult[];
     lang?: "en" | "ko";
   };
@@ -103,6 +103,7 @@ export async function POST(req: NextRequest) {
       hagwon,
       contact,
       email,
+      feedback: feedback || null,
       score,
       band,
       weakestPillar,
@@ -182,6 +183,7 @@ export async function POST(req: NextRequest) {
                 <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Band</td><td>${escapeHtml(band)}</td></tr>
                 <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Weakest pillar</td><td>${escapeHtml(weakestPillar)}</td></tr>
               </table>
+              ${feedback ? `<p style="margin-top: 16px; font-size: 14px;"><strong>Feedback:</strong> ${escapeHtml(feedback)}</p>` : ""}
             </div>
           `,
         });
