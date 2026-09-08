@@ -80,6 +80,7 @@ export function scoreAssessment(answers: Answers) {
   let lowestRatio = Infinity;
   let weakestPillarId = pillars[0].id;
   let weakestWeight = -Infinity;
+  let weakestHasProduct = false;
   const pillarResults: PillarResult[] = [];
 
   for (const pillar of pillars) {
@@ -88,13 +89,20 @@ export function scoreAssessment(answers: Answers) {
     const ratio = raw / maxRaw;
     weightedTotal += raw * pillar.weight;
     pillarResults.push({ pillar, raw, maxRaw, ratio, isStrong: ratio >= STRONG_RATIO_THRESHOLD });
-    // Ties go to the higher-weight pillar (parentComm/safety) since those
-    // are the ones worth surfacing for follow-up anyway — not just
-    // whichever pillar happens to come first in the array.
-    if (ratio < lowestRatio || (ratio === lowestRatio && pillar.weight > weakestWeight)) {
+    // Ties are broken in two steps: first toward whichever pillar has a real
+    // shipped product to point to (only parentComm today, via Chekki
+    // Schools) since that's the stronger, more useful CTA either way; then
+    // toward the higher-weight pillar; only then first-in-array.
+    const hasProduct = pillar.id === "parentComm";
+    const winsTie =
+      ratio === lowestRatio &&
+      ((hasProduct && !weakestHasProduct) ||
+        (hasProduct === weakestHasProduct && pillar.weight > weakestWeight));
+    if (ratio < lowestRatio || winsTie) {
       lowestRatio = ratio;
       weakestPillarId = pillar.id;
       weakestWeight = pillar.weight;
+      weakestHasProduct = hasProduct;
     }
   }
 
