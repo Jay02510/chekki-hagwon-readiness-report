@@ -130,6 +130,8 @@ export async function POST(req: NextRequest) {
             outOf: " / 72",
             weakestLabel: "가장 먼저 살펴볼 영역",
             allPillarsLabel: "영역별 전체 결과",
+            ctaProducts: "Chekki 제품 살펴보기",
+            ctaAudit: "심층 진단 요청하기",
             footer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
           }
         : {
@@ -138,8 +140,29 @@ export async function POST(req: NextRequest) {
             outOf: " / 72",
             weakestLabel: "Where to look first",
             allPillarsLabel: "Full breakdown by pillar",
+            ctaProducts: "Show me Chekki's products",
+            ctaAudit: "Request a deeper audit",
             footer: "This is a quick gut-check based on patterns we see across hagwons, not a formal audit.",
           };
+
+      // Reply-ready mailto links so the closing question has an actual way
+      // to answer instead of just asking the reader to "reply" with no
+      // prefilled destination.
+      const replyTarget = notifyEmail || fromAddress.replace(/^.*<(.+)>$/, "$1");
+      const mailtoProducts = `mailto:${replyTarget}?subject=${encodeURIComponent(
+        `${copy.ctaProducts} — ${hagwon || name || email}`
+      )}&body=${encodeURIComponent(
+        isKo
+          ? `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. Chekki의 기존 제품이 어떻게 도움이 될 수 있는지 안내받고 싶습니다.`
+          : `Hi, following my AI Readiness result (${score}/72), I'd like to see how Chekki's existing products can help.`
+      )}`;
+      const mailtoAudit = `mailto:${replyTarget}?subject=${encodeURIComponent(
+        `${copy.ctaAudit} — ${hagwon || name || email}`
+      )}&body=${encodeURIComponent(
+        isKo
+          ? `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. 개선점을 자세히 짚어보는 심층 진단을 요청하고 싶습니다.`
+          : `Hi, following my AI Readiness result (${score}/72), I'd like to set up a deeper audit to identify areas of improvement.`
+      )}`;
 
       await sendEmail(resendKey, {
         from: fromAddress,
@@ -167,7 +190,17 @@ export async function POST(req: NextRequest) {
             <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin-top: 24px;">
               ${escapeHtml(closingQuestion)}
             </p>
-            <p style="font-size: 13px; color: #71717a; margin-top: 12px;">
+            <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top: 14px;">
+              <tr>
+                <td style="padding-right: 10px; padding-bottom: 10px;">
+                  <a href="${mailtoProducts}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaProducts}</a>
+                </td>
+                <td style="padding-bottom: 10px;">
+                  <a href="${mailtoAudit}" style="display: inline-block; background-color: transparent; border: 1px solid #3f3f46; color: #f4f4f5; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaAudit}</a>
+                </td>
+              </tr>
+            </table>
+            <p style="font-size: 13px; color: #71717a; margin-top: 20px;">
               ${copy.footer}
             </p>
           </div>

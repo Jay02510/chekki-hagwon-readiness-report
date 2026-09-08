@@ -169,7 +169,27 @@ export default function Results() {
       ) : (
         <div>
           <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
-          <p className="font-body text-sm text-text-main/70 leading-relaxed">{t.closingQuestion}</p>
+          <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{t.closingQuestion}</p>
+          {process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
+                  `${t.ctaProducts} — ${hagwon || name || email}`
+                )}&body=${encodeURIComponent(t.ctaProductsBody(result.weightedTotal))}`}
+                className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+              >
+                {t.ctaProducts}
+              </a>
+              <a
+                href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
+                  `${t.ctaAudit} — ${hagwon || name || email}`
+                )}&body=${encodeURIComponent(t.ctaAuditBody(result.weightedTotal))}`}
+                className="inline-block bg-transparent border border-brand-border text-text-main font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:border-brand-orange/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+              >
+                {t.ctaAudit}
+              </a>
+            </div>
+          )}
         </div>
       )}
     </div>
