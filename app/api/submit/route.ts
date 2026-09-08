@@ -133,8 +133,9 @@ export async function POST(req: NextRequest) {
             allPillarsLabel: "영역별 전체 결과",
             ctaSchools: "Chekki Schools 살펴보기",
             ctaPartnership: "파트너십 알아보기",
-            ctaCheckChekki: "Chekki 살펴보기",
+            ctaProductCaption: "Chekki가 실제로 무엇을 하는지 확인해보세요",
             ctaBook: `${weakestPillarSafe} 상담 예약하기`,
+            ctaBookCaption: "15분, 이 영역 하나에 집중한 상담입니다",
           }
         : {
             subject: `Your Hagwon AI Readiness report — ${score}/84 (${band})`,
@@ -144,17 +145,15 @@ export async function POST(req: NextRequest) {
             allPillarsLabel: "Full breakdown by pillar",
             ctaSchools: "See how Chekki Schools works",
             ctaPartnership: "Explore a partnership",
-            ctaCheckChekki: "Check out Chekki",
+            ctaProductCaption: "See what Chekki actually does",
             ctaBook: `Discuss your ${weakestPillarSafe} gap`,
+            ctaBookCaption: "15 minutes, focused on this one gap",
           };
 
-      // Two shipped products map to two pillars: Chekki Schools (school-run
-      // tool) fits parentComm; the parent-facing homework helper fits
-      // teaching, pitched as a partnership since the director would be
-      // introducing it to parents, not running it themselves. Every other
-      // pillar routes to a booking link (or mailto fallback) instead of a
-      // product that doesn't exist for that pillar yet.
-      const isSchoolsFit = weakestPillarId === "parentComm";
+      // Only the teaching pillar maps to the parent-facing homework helper,
+      // pitched as a partnership since the director would be introducing it
+      // to parents, not running it themselves. Every other pillar — including
+      // parentComm — points at Chekki Schools, the director-facing product.
       const isHomeworkFit = weakestPillarId === "teaching";
       const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
       const replyTarget = notifyEmail || fromAddress.replace(/^.*<(.+)>$/, "$1");
@@ -166,13 +165,12 @@ export async function POST(req: NextRequest) {
           : `Hi, following my AI Readiness result (${score}/84), I'd like to set up a time to discuss my weakest pillar and next steps.`
       )}`;
 
-      const productHref = isSchoolsFit ? "https://chekkiai.com/schools" : "https://chekkiai.com";
-      const productLabel = isSchoolsFit ? copy.ctaSchools : isHomeworkFit ? copy.ctaPartnership : copy.ctaCheckChekki;
-      const productBtnHtml = `<a href="${productHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px; margin-right: 10px;">${productLabel}</a>`;
-      const bookBtnHtml = bookingUrl
-        ? `<a href="${escapeHtml(bookingUrl)}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
-        : notifyEmail
-        ? `<a href="${mailtoBook}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
+      const productHref = isHomeworkFit ? "https://chekkiai.com" : "https://chekkiai.com/schools";
+      const productLabel = isHomeworkFit ? copy.ctaPartnership : copy.ctaSchools;
+      const productBtnHtml = `<div style="display: inline-block; margin-right: 24px;"><a href="${productHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${productLabel}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaProductCaption}</p></div>`;
+      const bookHref = bookingUrl ? escapeHtml(bookingUrl) : notifyEmail ? mailtoBook : null;
+      const bookBtnHtml = bookHref
+        ? `<div style="display: inline-block;"><a href="${bookHref}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaBookCaption}</p></div>`
         : "";
       const ctaHtml = productBtnHtml + bookBtnHtml;
 

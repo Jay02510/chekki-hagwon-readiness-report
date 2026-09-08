@@ -81,18 +81,17 @@ export default function Results() {
           weakestNextStep2: pick(result.weakestPillar.nextStep2, lang),
           closingQuestion: closingText,
           disclaimer: t.disclaimer,
-          // The weakest pillar's blurb/next-step are sent separately above and
-          // get their own section in the email — omit them here so they're
-          // not shown twice in the per-pillar table.
-          pillarResults: result.pillarResults.map((p) => ({
+          // The weakest pillar gets its own section above with the full
+          // score and copy — drop it from this table entirely instead of
+          // repeating its score row a second time.
+          pillarResults: result.pillarResults
+            .filter((p) => p.pillar.id !== result.weakestPillar.id)
+            .map((p) => ({
             name: pick(p.pillar.name, lang),
             raw: p.raw,
             maxRaw: p.maxRaw,
-            blurb: p.isStrong || p.pillar.id === result.weakestPillar.id ? null : pick(p.pillar.weakestBlurb, lang),
-            nextStep:
-              p.isStrong || p.pillar.id === result.weakestPillar.id
-                ? null
-                : personalizedStepFor(p.pillar.id, pick(p.pillar.nextStep, lang)),
+            blurb: p.isStrong ? null : pick(p.pillar.weakestBlurb, lang),
+            nextStep: p.isStrong ? null : personalizedStepFor(p.pillar.id, pick(p.pillar.nextStep, lang)),
           })),
         }),
       });
@@ -168,7 +167,9 @@ export default function Results() {
         <div className="border-t border-brand-border pt-6 mb-10">
           <p className="font-body text-sm text-brand-orange mb-4">{t.allPillars}</p>
           <div className="space-y-5">
-            {result.pillarResults.map(({ pillar, raw, maxRaw, isStrong }) => (
+            {result.pillarResults
+              .filter(({ pillar }) => pillar.id !== result.weakestPillar.id)
+              .map(({ pillar, raw, maxRaw, isStrong }) => (
               <div key={pillar.id}>
                 <div className="flex justify-between font-body text-sm text-text-main mb-1">
                   <span>{pick(pillar.name, lang)}</span>
@@ -218,36 +219,42 @@ export default function Results() {
         <div>
           <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
           <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{closingText}</p>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href={isSchoolsFit ? "https://chekkiai.com/schools" : "https://chekkiai.com"}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-            >
-              {isSchoolsFit ? t.ctaSchools : isHomeworkFit ? t.ctaPartnership : t.ctaCheckChekki}
-            </a>
-            {bookingUrl ? (
+          <div className="flex flex-wrap gap-6">
+            <div>
               <a
-                href={bookingUrl}
+                href={isHomeworkFit ? "https://chekkiai.com" : "https://chekkiai.com/schools"}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+                className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
               >
-                {t.ctaBook(pick(result.weakestPillar.name, lang))}
+                {isHomeworkFit ? t.ctaPartnership : t.ctaSchools}
               </a>
-            ) : (
-              process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
+              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaProductCaption}</p>
+            </div>
+            <div>
+              {bookingUrl ? (
                 <a
-                  href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
-                    `${t.ctaBook(pick(result.weakestPillar.name, lang))} — ${hagwon || name || email}`
-                  )}&body=${encodeURIComponent(t.ctaBookBody(result.weightedTotal))}`}
+                  href={bookingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
                 >
                   {t.ctaBook(pick(result.weakestPillar.name, lang))}
                 </a>
-              )
-            )}
+              ) : (
+                process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
+                  <a
+                    href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
+                      `${t.ctaBook(pick(result.weakestPillar.name, lang))} — ${hagwon || name || email}`
+                    )}&body=${encodeURIComponent(t.ctaBookBody(result.weightedTotal))}`}
+                    className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+                  >
+                    {t.ctaBook(pick(result.weakestPillar.name, lang))}
+                  </a>
+                )
+              )}
+              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaBookCaption}</p>
+            </div>
           </div>
         </div>
       )}
