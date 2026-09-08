@@ -11,8 +11,12 @@ export type Band = {
   blurb: Localized;
 };
 
+// Range is 21-84: with 17 questions weighted (parentComm/safety/teaching at
+// 1.5x, the rest at 1x), 21 is the lowest possible weighted total (every
+// answer worth 1 point) and 84 the highest (every answer worth 4). Four
+// equal 16-point bands split that range.
 export const bands: Band[] = [
-  { name: { en: "Traditional Hagwon", ko: "전통적인 학원" }, min: 18, max: 31,
+  { name: { en: "Traditional Hagwon", ko: "전통적인 학원" }, min: 21, max: 36,
     intro: {
       en: "This is where most hagwons start out — nothing here is unusual, and there's a clear, specific path to close the gap below.",
       ko: "대부분의 학원이 이 단계에서 시작합니다. 특별히 이상한 결과가 아니며, 아래에 격차를 좁힐 수 있는 명확하고 구체적인 방법을 안내해 드립니다.",
@@ -21,7 +25,7 @@ export const bands: Band[] = [
       en: "Most work is manual or paper-based. The smallest changes will save the most time here, since almost nothing is automated yet.",
       ko: "대부분의 업무가 수기로 처리되고 있습니다. 아직 자동화된 부분이 거의 없기 때문에, 작은 변화만으로도 가장 큰 시간 절약 효과를 볼 수 있는 단계입니다.",
     } },
-  { name: { en: "Digitizing", ko: "디지털 전환 중" }, min: 32, max: 45,
+  { name: { en: "Digitizing", ko: "디지털 전환 중" }, min: 37, max: 52,
     intro: {
       en: "You've already got real pieces in place — most of what's left is connecting them, not starting from scratch.",
       ko: "이미 실질적인 기반을 갖추고 계십니다. 남은 과제는 처음부터 새로 시작하는 것이 아니라, 있는 것들을 서로 연결하는 일입니다.",
@@ -30,7 +34,7 @@ export const bands: Band[] = [
       en: "Spreadsheets and standalone tools exist but don't talk to each other — likely manual double-entry costing more staff time than anyone's tracking.",
       ko: "스프레드시트와 개별 도구들은 사용하고 있지만 서로 연동되지 않아, 수작업으로 이중 입력하는 데 드는 시간이 생각보다 많을 가능성이 큽니다.",
     } },
-  { name: { en: "Tech-Enabled", ko: "시스템 활용 학원" }, min: 46, max: 59,
+  { name: { en: "Tech-Enabled", ko: "시스템 활용 학원" }, min: 53, max: 68,
     intro: {
       en: "Solid result — you're ahead of most hagwons we see. What's left is connecting what you have, not rebuilding it.",
       ko: "좋은 결과입니다. 대부분의 학원보다 앞서 있는 상태입니다. 남은 과제는 다시 만드는 것이 아니라 이미 갖춘 것들을 연결하는 일입니다.",
@@ -39,7 +43,7 @@ export const bands: Band[] = [
       en: "Dedicated systems cover most core functions. The opportunity now is connecting them and adding personalization at scale.",
       ko: "핵심 업무 대부분이 전용 시스템으로 관리되고 있습니다. 이제는 이 시스템들을 서로 연결하고, 학생별 맞춤화를 대규모로 적용할 차례입니다.",
     } },
-  { name: { en: "AI-Ready", ko: "AI 준비 완료" }, min: 60, max: 72,
+  { name: { en: "AI-Ready", ko: "AI 준비 완료" }, min: 69, max: 84,
     intro: {
       en: "Congratulations — this is a genuinely strong result, well ahead of the vast majority of hagwons we see.",
       ko: "축하드립니다. 매우 우수한 결과이며, 대부분의 학원보다 훨씬 앞서 있는 상태입니다.",

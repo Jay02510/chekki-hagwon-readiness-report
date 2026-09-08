@@ -125,9 +125,9 @@ export async function POST(req: NextRequest) {
     try {
       const copy = isKo
         ? {
-            subject: `학원 AI 준비도 리포트 — ${score}/72 (${band})`,
+            subject: `학원 AI 준비도 리포트 — ${score}/84 (${band})`,
             eyebrow: "AI 준비도 진단 결과",
-            outOf: " / 72",
+            outOf: " / 84",
             weakestLabel: "가장 먼저 살펴볼 영역",
             allPillarsLabel: "영역별 전체 결과",
             ctaSchools: "Chekki Schools 살펴보기",
@@ -135,9 +135,9 @@ export async function POST(req: NextRequest) {
             ctaAudit: "심층 진단 요청하기",
           }
         : {
-            subject: `Your Hagwon AI Readiness report — ${score}/72 (${band})`,
+            subject: `Your Hagwon AI Readiness report — ${score}/84 (${band})`,
             eyebrow: "Your Hagwon AI Readiness result",
-            outOf: " / 72",
+            outOf: " / 84",
             weakestLabel: "Where to look first",
             allPillarsLabel: "Full breakdown by pillar",
             ctaSchools: "See how Chekki Schools works",
@@ -157,8 +157,8 @@ export async function POST(req: NextRequest) {
         `${copy.ctaAudit} — ${hagwon || name || email}`
       )}&body=${encodeURIComponent(
         isKo
-          ? `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. 개선점을 자세히 짚어보는 심층 진단을 요청하고 싶습니다.`
-          : `Hi, following my AI Readiness result (${score}/72), I'd like to set up a deeper audit to identify areas of improvement.`
+          ? `안녕하세요, AI 준비도 진단 결과(${score}/84)를 확인했습니다. 개선점을 자세히 짚어보는 심층 진단을 요청하고 싶습니다.`
+          : `Hi, following my AI Readiness result (${score}/84), I'd like to set up a deeper audit to identify areas of improvement.`
       )}`;
 
       const ctaHtml = isSchoolsFit
@@ -211,7 +211,7 @@ export async function POST(req: NextRequest) {
         await sendEmail(resendKey, {
           from: fromAddress,
           to: [notifyEmail],
-          subject: `New readiness quiz lead: ${escapeHtml(hagwon || name || "Unknown")} — ${score}/72 (${band})`,
+          subject: `New readiness quiz lead: ${escapeHtml(hagwon || name || "Unknown")} — ${score}/84 (${band})`,
           html: `
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 16px;">
               <p>New AI Readiness quiz submission.</p>
@@ -220,7 +220,7 @@ export async function POST(req: NextRequest) {
                 <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Hagwon</td><td>${escapeHtml(hagwon)}</td></tr>
                 <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Email</td><td>${escapeHtml(email)}</td></tr>
                 <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Contact</td><td>${escapeHtml(contact)}</td></tr>
-                <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Score</td><td>${escapeHtml(String(score))}/72</td></tr>
+                <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Score</td><td>${escapeHtml(String(score))}/84</td></tr>
                 <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Band</td><td>${escapeHtml(band)}</td></tr>
                 <tr><td style="padding: 4px 12px 4px 0; color: #71717a;">Weakest pillar</td><td>${escapeHtml(weakestPillar)}</td></tr>
               </table>

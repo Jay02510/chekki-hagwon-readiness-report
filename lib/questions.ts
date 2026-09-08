@@ -59,7 +59,7 @@ export const pillars: Pillar[] = [
       en: "Once follow-up is consistent, add one more discovery channel beyond word of mouth (an active Instagram or Naver Blog is the lowest-effort next step) so growth isn't capped by referral speed alone.",
       ko: "후속 연락이 자리 잡으면, 입소문 외에 신규 채널을 하나 더 추가해보세요(인스타그램이나 네이버 블로그 운영이 가장 시작하기 쉽습니다). 성장이 입소문 속도에만 갇히지 않도록 하는 것이 목표입니다.",
     } },
-  { id: "teaching", name: { en: "Teaching & Curriculum Personalization", ko: "수업 및 맞춤형 커리큘럼" }, weight: 1,
+  { id: "teaching", name: { en: "Teaching & Curriculum Personalization", ko: "수업 및 맞춤형 커리큘럼" }, weight: 1.5,
     weakestBlurb: {
       en: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room.",
       ko: "획일화된 교재는 잘하는 학생은 지루해하고, 부진한 학생은 같은 반에서 더 뒤처지게 만드는 원인인 경우가 많습니다.",
@@ -205,6 +205,14 @@ export const questions: Question[] = [
       { en: "A teacher or two experiments on their own", ko: "한두 명이 개인적으로 시도해 보는 정도입니다" },
       { en: "Some tools are used team-wide, informally", ko: "일부 도구를 팀 전체가 비공식적으로 사용합니다" },
       { en: "AI tools are a standard, expected part of the workflow", ko: "AI 도구가 업무의 표준적인 일부로 자리 잡았습니다" },
+    ) },
+  { id: "q17", pillarId: "teaching",
+    prompt: { en: "When students take homework home, how much of it actually gets done — correctly and understood, not just completed?", ko: "학생들이 숙제를 집에 가져갔을 때, 그냥 했다는 것 말고 실제로 얼마나 제대로 끝내고 이해하나요?" },
+    options: opts(
+      { en: "Most parents can't help with the English or don't have time, so a lot goes unfinished or copied", ko: "영어를 봐줄 수 없거나 시간이 없는 학부모님이 많아서, 숙제를 다 못 하거나 베껴 오는 경우가 많습니다" },
+      { en: "Some students get real help at home, others don't — it's inconsistent and hard to track", ko: "집에서 제대로 도움받는 학생도 있고 아닌 학생도 있어서, 들쭉날쭉하고 파악하기 어렵습니다" },
+      { en: "We send answer keys or guides so parents can check their child's work", ko: "학부모님이 확인하실 수 있도록 정답지나 가이드를 함께 보냅니다" },
+      { en: "Homework is designed to work independently, with feedback the student and parent can both see", ko: "숙제는 학생 혼자서도 할 수 있게 설계되어 있고, 학생과 학부모님 모두 피드백을 확인할 수 있습니다" },
     ) },
   { id: "q13", pillarId: "data",
     prompt: { en: "If you needed a student's scores, attendance, and notes all at once, where would you have to look?", ko: "한 학생의 성적, 출결, 특이사항을 한 번에 확인해야 한다면, 어디를 봐야 하나요?" },
