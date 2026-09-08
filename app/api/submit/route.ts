@@ -131,6 +131,7 @@ export async function POST(req: NextRequest) {
             weakestLabel: "가장 먼저 살펴볼 영역",
             allPillarsLabel: "영역별 전체 결과",
             ctaSchools: "Chekki Schools 살펴보기",
+            ctaPartnership: "파트너십 알아보기",
             ctaBook: "15분 상담 예약하기",
             ctaAudit: "심층 진단 요청하기",
           }
@@ -141,16 +142,19 @@ export async function POST(req: NextRequest) {
             weakestLabel: "Where to look first",
             allPillarsLabel: "Full breakdown by pillar",
             ctaSchools: "See how Chekki Schools works",
+            ctaPartnership: "Explore a partnership",
             ctaBook: "Book a 15-minute call",
             ctaAudit: "Request a deeper audit",
           };
 
-      // Chekki Schools is the only shipped product today — only pitch it when
-      // Parent Communication & Reporting is the actual weakest pillar. Every
-      // other pillar routes to a booking link (or a mailto fallback if no
-      // booking link is configured yet) instead of a product that doesn't
-      // exist for that pillar yet.
+      // Two shipped products map to two pillars: Chekki Schools (school-run
+      // tool) fits parentComm; the parent-facing homework helper fits
+      // teaching, pitched as a partnership since the director would be
+      // introducing it to parents, not running it themselves. Every other
+      // pillar routes to a booking link (or mailto fallback) instead of a
+      // product that doesn't exist for that pillar yet.
       const isSchoolsFit = weakestPillarId === "parentComm";
+      const isHomeworkFit = weakestPillarId === "teaching";
       const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
       const replyTarget = notifyEmail || fromAddress.replace(/^.*<(.+)>$/, "$1");
       const mailtoAudit = `mailto:${replyTarget}?subject=${encodeURIComponent(
@@ -163,6 +167,8 @@ export async function POST(req: NextRequest) {
 
       const ctaHtml = isSchoolsFit
         ? `<a href="https://chekkiai.com/schools" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaSchools}</a>`
+        : isHomeworkFit
+        ? `<a href="https://chekkiai.com" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaPartnership}</a>`
         : bookingUrl
         ? `<a href="${escapeHtml(bookingUrl)}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
         : notifyEmail

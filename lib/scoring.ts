@@ -94,10 +94,10 @@ export function scoreAssessment(answers: Answers) {
     weightedTotal += raw * pillar.weight;
     pillarResults.push({ pillar, raw, maxRaw, ratio, isStrong: ratio >= STRONG_RATIO_THRESHOLD });
     // Ties are broken in two steps: first toward whichever pillar has a real
-    // shipped product to point to (only parentComm today, via Chekki
-    // Schools) since that's the stronger, more useful CTA either way; then
-    // toward the higher-weight pillar; only then first-in-array.
-    const hasProduct = pillar.id === "parentComm";
+    // shipped product to point to (parentComm → Chekki Schools, teaching →
+    // the homework helper) since that's the stronger, more useful CTA either
+    // way; then toward the higher-weight pillar; only then first-in-array.
+    const hasProduct = pillar.id === "parentComm" || pillar.id === "teaching";
     const winsTie =
       ratio === lowestRatio &&
       ((hasProduct && !weakestHasProduct) ||

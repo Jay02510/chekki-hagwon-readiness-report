@@ -20,8 +20,11 @@ export const strings = {
     // product pitch, so the CTA never claims something that doesn't exist yet.
     closingSchools: (pillarName: string) =>
       `Chekki Schools — automated class reports with Korean translation built in — would close most of this ${pillarName} gap.`,
+    closingHomework:
+      "Chekki's homework helper personalizes practice per student — deterministic, not generic AI guesses — and ties every assignment back to what your teachers actually gave. As a partner school, you'd be introducing this directly to your parents.",
     closingOther: "This is common, and it's usually worth a closer look before deciding what to fix first.",
     ctaSchools: "See how Chekki Schools works",
+    ctaPartnership: "Explore a partnership",
     ctaBook: "Book a 15-minute call",
     ctaAudit: "Request a deeper audit",
     ctaAuditBody: (score: number) => `Hi, following my AI Readiness result (${score}/84), I'd like to set up a deeper audit to identify areas of improvement.`,
@@ -57,8 +60,11 @@ export const strings = {
     youMentioned: (answerText: string) => `이렇게 답변해 주셨죠: "${answerText}" — `,
     closingSchools: (pillarName: string) =>
       `Chekki Schools — 자동 리포트 생성과 한국어 번역까지 지원합니다 — 를 활용하면 ${pillarName} 영역의 격차 대부분을 줄일 수 있습니다.`,
+    closingHomework:
+      "Chekki의 숙제 도우미는 학생별 맞춤 연습을 제공합니다 — 임의의 AI 추측이 아니라, 선생님이 실제로 낸 과제를 기반으로 한 결정론적 방식입니다. 파트너 학원으로서 학부모님들께 직접 소개하실 수 있습니다.",
     closingOther: "많은 학원들이 겪는 부분이며, 무엇부터 손볼지 정하기 전에 자세히 살펴볼 가치가 있습니다.",
     ctaSchools: "Chekki Schools 살펴보기",
+    ctaPartnership: "파트너십 알아보기",
     ctaBook: "15분 상담 예약하기",
     ctaAudit: "심층 진단 요청하기",
     ctaAuditBody: (score: number) => `안녕하세요, AI 준비도 진단 결과(${score}/84)를 확인했습니다. 개선점을 자세히 짚어보는 심층 진단을 요청하고 싶습니다.`,

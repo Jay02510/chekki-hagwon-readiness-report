@@ -119,11 +119,17 @@ export default function Results() {
   const weakestAnswer = weakestAnswerText(result.weakestPillar.id);
   const weakestNextStepText = pick(result.weakestPillar.nextStep, lang);
   const personalizedNextStep = weakestAnswer ? t.youMentioned(weakestAnswer) + weakestNextStepText : weakestNextStepText;
-  // Chekki Schools is the only shipped product today — only pitch it when
-  // Parent Communication & Reporting is the actual weakest pillar. Every
-  // other pillar routes to a call instead of a product that doesn't exist yet.
+  // Two shipped products map to two pillars: Chekki Schools (a school-run
+  // tool) fits parentComm, the parent-facing homework helper fits teaching
+  // — pitched as a partnership since the director isn't the end user, they'd
+  // be introducing it to parents. Every other pillar routes to a call.
   const isSchoolsFit = result.weakestPillar.id === "parentComm";
-  const closingText = isSchoolsFit ? t.closingSchools(pick(result.weakestPillar.name, lang)) : t.closingOther;
+  const isHomeworkFit = result.weakestPillar.id === "teaching";
+  const closingText = isSchoolsFit
+    ? t.closingSchools(pick(result.weakestPillar.name, lang))
+    : isHomeworkFit
+    ? t.closingHomework
+    : t.closingOther;
   const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
 
   return (
@@ -211,6 +217,15 @@ export default function Results() {
               className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
             >
               {t.ctaSchools}
+            </a>
+          ) : isHomeworkFit ? (
+            <a
+              href="https://chekkiai.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+            >
+              {t.ctaPartnership}
             </a>
           ) : bookingUrl ? (
             <a
