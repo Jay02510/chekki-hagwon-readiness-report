@@ -252,23 +252,23 @@ export default function Results() {
                   href={bookingUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+                  className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
                 >
-                  {t.ctaBook(pick(result.weakestPillar.name, lang))}
+                  {t.ctaBook}
                 </a>
               ) : (
                 process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
                   <a
                     href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
-                      `${t.ctaBook(pick(result.weakestPillar.name, lang))} — ${hagwon || name || email}`
+                      `${t.ctaBook} — ${hagwon || name || email}`
                     )}&body=${encodeURIComponent(t.ctaBookBody(result.weightedTotal))}`}
-                    className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+                    className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
                   >
-                    {t.ctaBook(pick(result.weakestPillar.name, lang))}
+                    {t.ctaBook}
                   </a>
                 )
               )}
-              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaBookCaption}</p>
+              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaBookCaption(pick(result.weakestPillar.name, lang))}</p>
             </div>
           </div>
         </div>

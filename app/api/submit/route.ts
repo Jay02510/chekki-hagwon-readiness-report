@@ -151,8 +151,8 @@ export async function POST(req: NextRequest) {
             strongNote: "탄탄합니다 — 지금은 다른 영역에 집중하셔도 좋습니다.",
             ctaTry: "Chekki 사용해보기",
             ctaTryCaption: "Chekki가 어떻게 도움이 되는지 확인해보세요",
-            ctaBook: `${weakestPillarSafe}에 대해 더 이야기해보고 싶으신가요?`,
-            ctaBookCaption: "편하신 시간을 예약해보세요",
+            ctaBook: "미팅 예약하기",
+            ctaBookCaption: `${weakestPillarSafe}에 대해 더 자세히 이야기해보아요`,
           }
         : {
             subject: `Your Hagwon AI Readiness report — ${score}/84 (${band})`,
@@ -163,8 +163,8 @@ export async function POST(req: NextRequest) {
             strongNote: "Solid — this one's already working, so focus your energy elsewhere first.",
             ctaTry: "Try Chekki",
             ctaTryCaption: "See how Chekki can help",
-            ctaBook: `Want to discuss your ${weakestPillarSafe} more?`,
-            ctaBookCaption: "Set up a time that works for you",
+            ctaBook: "Book a meeting",
+            ctaBookCaption: `Let's discuss your ${weakestPillarSafe} further`,
           };
 
       // Only the teaching pillar maps to the parent-facing homework helper,
@@ -186,7 +186,7 @@ export async function POST(req: NextRequest) {
       const productBtnHtml = `<div style="display: inline-block; margin-right: 24px;"><a href="${productHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaTry}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaTryCaption}</p></div>`;
       const bookHref = bookingUrl ? escapeHtml(bookingUrl) : notifyEmail ? mailtoBook : null;
       const bookBtnHtml = bookHref
-        ? `<div style="display: inline-block;"><a href="${bookHref}" style="display: inline-block; border: 1px solid #f97316; color: #c2410c; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaBookCaption}</p></div>`
+        ? `<div style="display: inline-block;"><a href="${bookHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaBookCaption}</p></div>`
         : "";
       const ctaHtml = productBtnHtml + bookBtnHtml;
 

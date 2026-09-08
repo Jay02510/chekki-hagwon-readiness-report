@@ -112,23 +112,23 @@ export default async function ReportPermalink({ params }: { params: { id: string
                 href={bookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90"
+                className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90"
               >
-                {t.ctaBook(report.weakestPillar)}
+                {t.ctaBook}
               </a>
             ) : (
               notifyEmail && (
                 <a
-                  href={`mailto:${notifyEmail}?subject=${encodeURIComponent(`${t.ctaBook(report.weakestPillar)} — ${report.weakestPillar}`)}&body=${encodeURIComponent(
+                  href={`mailto:${notifyEmail}?subject=${encodeURIComponent(`${t.ctaBook} — ${report.weakestPillar}`)}&body=${encodeURIComponent(
                     t.ctaBookBody(report.score)
                   )}`}
-                  className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90"
+                  className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90"
                 >
-                  {t.ctaBook(report.weakestPillar)}
+                  {t.ctaBook}
                 </a>
               )
             )}
-            <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaBookCaption}</p>
+            <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaBookCaption(report.weakestPillar)}</p>
           </div>
         </div>
       </div>
