@@ -35,9 +35,10 @@ export default function Results() {
     }
   }, []);
 
-  // The lowest-scoring answered question within the weakest pillar — used to
-  // open that pillar's first opportunity with the director's actual answer
-  // instead of a generic, score-band-only recommendation.
+  // The lowest-scoring answered question within a pillar — used to open that
+  // pillar's opportunity with the director's actual answer instead of a
+  // generic, score-band-only recommendation. Applied to every pillar, not
+  // just the weakest, so the whole report reads as specific to their answers.
   function weakestAnswerText(pillarId: string): string | null {
     let worstText: string | null = null;
     let worstPoints = Infinity;
@@ -49,6 +50,11 @@ export default function Results() {
       }
     }
     return worstText;
+  }
+
+  function personalizedStepFor(pillarId: string, nextStepText: string): string {
+    const answer = weakestAnswerText(pillarId);
+    return answer ? t.youMentioned(answer) + nextStepText : nextStepText;
   }
 
   async function submit() {
@@ -83,7 +89,10 @@ export default function Results() {
             raw: p.raw,
             maxRaw: p.maxRaw,
             blurb: p.isStrong || p.pillar.id === result.weakestPillar.id ? null : pick(p.pillar.weakestBlurb, lang),
-            nextStep: p.isStrong || p.pillar.id === result.weakestPillar.id ? null : pick(p.pillar.nextStep, lang),
+            nextStep:
+              p.isStrong || p.pillar.id === result.weakestPillar.id
+                ? null
+                : personalizedStepFor(p.pillar.id, pick(p.pillar.nextStep, lang)),
           })),
         }),
       });
@@ -116,9 +125,7 @@ export default function Results() {
     );
   }
 
-  const weakestAnswer = weakestAnswerText(result.weakestPillar.id);
-  const weakestNextStepText = pick(result.weakestPillar.nextStep, lang);
-  const personalizedNextStep = weakestAnswer ? t.youMentioned(weakestAnswer) + weakestNextStepText : weakestNextStepText;
+  const personalizedNextStep = personalizedStepFor(result.weakestPillar.id, pick(result.weakestPillar.nextStep, lang));
   // Two shipped products map to two pillars: Chekki Schools (a school-run
   // tool) fits parentComm, the parent-facing homework helper fits teaching
   // — pitched as a partnership since the director isn't the end user, they'd
@@ -170,7 +177,9 @@ export default function Results() {
                 {!isStrong && pillar.id !== result.weakestPillar.id && (
                   <>
                     <p className="font-body text-sm text-text-main/70 leading-relaxed">{pick(pillar.weakestBlurb, lang)}</p>
-                    <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-1">{pick(pillar.nextStep, lang)}</p>
+                    <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-1">
+                      {personalizedStepFor(pillar.id, pick(pillar.nextStep, lang))}
+                    </p>
                   </>
                 )}
               </div>
@@ -209,45 +218,37 @@ export default function Results() {
         <div>
           <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
           <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{closingText}</p>
-          {isSchoolsFit ? (
+          <div className="flex flex-wrap gap-3">
             <a
-              href="https://chekkiai.com/schools"
+              href={isSchoolsFit ? "https://chekkiai.com/schools" : "https://chekkiai.com"}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
             >
-              {t.ctaSchools}
+              {isSchoolsFit ? t.ctaSchools : isHomeworkFit ? t.ctaPartnership : t.ctaCheckChekki}
             </a>
-          ) : isHomeworkFit ? (
-            <a
-              href="https://chekkiai.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-            >
-              {t.ctaPartnership}
-            </a>
-          ) : bookingUrl ? (
-            <a
-              href={bookingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-            >
-              {t.ctaBook}
-            </a>
-          ) : (
-            process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
+            {bookingUrl ? (
               <a
-                href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
-                  `${t.ctaAudit} — ${hagwon || name || email}`
-                )}&body=${encodeURIComponent(t.ctaAuditBody(result.weightedTotal))}`}
-                className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+                href={bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
               >
-                {t.ctaAudit}
+                {t.ctaBook}
               </a>
-            )
-          )}
+            ) : (
+              process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
+                <a
+                  href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
+                    `${t.ctaAudit} — ${hagwon || name || email}`
+                  )}&body=${encodeURIComponent(t.ctaAuditBody(result.weightedTotal))}`}
+                  className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+                >
+                  {t.ctaAudit}
+                </a>
+              )
+            )}
+          </div>
         </div>
       )}
     </div>

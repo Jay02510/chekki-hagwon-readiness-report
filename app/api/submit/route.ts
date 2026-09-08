@@ -132,6 +132,7 @@ export async function POST(req: NextRequest) {
             allPillarsLabel: "영역별 전체 결과",
             ctaSchools: "Chekki Schools 살펴보기",
             ctaPartnership: "파트너십 알아보기",
+            ctaCheckChekki: "Chekki 살펴보기",
             ctaBook: "15분 상담 예약하기",
             ctaAudit: "심층 진단 요청하기",
           }
@@ -143,6 +144,7 @@ export async function POST(req: NextRequest) {
             allPillarsLabel: "Full breakdown by pillar",
             ctaSchools: "See how Chekki Schools works",
             ctaPartnership: "Explore a partnership",
+            ctaCheckChekki: "Check out Chekki",
             ctaBook: "Book a 15-minute call",
             ctaAudit: "Request a deeper audit",
           };
@@ -165,15 +167,15 @@ export async function POST(req: NextRequest) {
           : `Hi, following my AI Readiness result (${score}/84), I'd like to set up a deeper audit to identify areas of improvement.`
       )}`;
 
-      const ctaHtml = isSchoolsFit
-        ? `<a href="https://chekkiai.com/schools" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaSchools}</a>`
-        : isHomeworkFit
-        ? `<a href="https://chekkiai.com" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaPartnership}</a>`
-        : bookingUrl
-        ? `<a href="${escapeHtml(bookingUrl)}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
+      const productHref = isSchoolsFit ? "https://chekkiai.com/schools" : "https://chekkiai.com";
+      const productLabel = isSchoolsFit ? copy.ctaSchools : isHomeworkFit ? copy.ctaPartnership : copy.ctaCheckChekki;
+      const productBtnHtml = `<a href="${productHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px; margin-right: 10px;">${productLabel}</a>`;
+      const bookBtnHtml = bookingUrl
+        ? `<a href="${escapeHtml(bookingUrl)}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
         : notifyEmail
-        ? `<a href="${mailtoAudit}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaAudit}</a>`
+        ? `<a href="${mailtoAudit}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaAudit}</a>`
         : "";
+      const ctaHtml = productBtnHtml + bookBtnHtml;
 
       await sendEmail(resendKey, {
         from: fromAddress,
