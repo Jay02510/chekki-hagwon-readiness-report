@@ -114,6 +114,7 @@ export async function POST(req: NextRequest) {
   const fromAddress = process.env.RESEND_FROM ?? "Chekki AI <onboarding@resend.dev>";
 
   if (resendKey) {
+    const notifyEmail = process.env.NOTIFY_EMAIL;
     try {
       const copy = isKo
         ? {
@@ -136,6 +137,7 @@ export async function POST(req: NextRequest) {
       await sendEmail(resendKey, {
         from: fromAddress,
         to: [email],
+        ...(notifyEmail ? { reply_to: notifyEmail } : {}),
         subject: copy.subject,
         html: `
           <div style="font-family: 'Bricolage Grotesque', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #030305; color: #f4f4f5; border-radius: 16px;">
@@ -162,7 +164,6 @@ export async function POST(req: NextRequest) {
       console.error("Failed to send report email", e);
     }
 
-    const notifyEmail = process.env.NOTIFY_EMAIL;
     if (notifyEmail) {
       try {
         await sendEmail(resendKey, {
