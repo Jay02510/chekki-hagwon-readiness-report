@@ -136,7 +136,7 @@ export default function Results() {
     ? t.closingSchools(pick(result.weakestPillar.name, lang))
     : isHomeworkFit
     ? t.closingHomework
-    : t.closingOther;
+    : t.closingOther(pick(result.weakestPillar.name, lang));
   const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
 
   return (
