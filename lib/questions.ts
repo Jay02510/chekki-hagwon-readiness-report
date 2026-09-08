@@ -4,6 +4,11 @@ export type Option = { label: "A" | "B" | "C" | "D"; text: Localized; points: nu
 export type Question = { id: string; pillarId: string; prompt: Localized; options: Option[] };
 export type Pillar = {
   id: string; name: Localized; weight: number; weakestBlurb: Localized; nextStep: Localized; nextStep2: Localized;
+  // Override nextStep when the personalized quote comes from a specific
+  // question — teaching spans two distinct problems (in-class leveled
+  // tracks vs. the homework question), and the default nextStep only fits
+  // the former, so it needs to shift for the latter.
+  nextStepByQuestion?: Record<string, Localized>;
 };
 
 export const pillars: Pillar[] = [
@@ -71,6 +76,12 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Pick one measurable benchmark (a reading level, an internal test score) and track it consistently per student — without a number to move, \"personalization\" stays a feeling instead of a result.",
       ko: "측정 가능한 기준(리딩 레벨, 내부 테스트 점수 등) 하나를 정해 학생별로 꾸준히 추적하세요. 움직일 수치가 없으면 '맞춤화'는 결과가 아니라 막연한 느낌에 그치게 됩니다.",
+    },
+    nextStepByQuestion: {
+      q17: {
+        en: "Send home a short answer key or self-check guide with each assignment, so a student can verify their own work without needing a parent who reads English — a low-effort first step before automating it.",
+        ko: "숙제마다 간단한 정답지나 자가 점검 가이드를 함께 보내, 영어를 읽는 학부모님이 없어도 학생 스스로 확인할 수 있게 해보세요. 자동화 도구를 도입하기 전, 낮은 비용으로 시작할 수 있는 첫걸음입니다.",
+      },
     } },
   { id: "data", name: { en: "Data & Records", ko: "데이터 및 기록 관리" }, weight: 1,
     weakestBlurb: {

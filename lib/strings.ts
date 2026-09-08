@@ -59,7 +59,7 @@ export const strings = {
     weakestPillarLabel: "가장 취약한 영역",
     allPillars: "7개 영역 전체 결과",
     leadIn: "전체 리포트와 함께, 점수를 올릴 수 있는 구체적인 방법도 함께 안내해 드릴까요? 연락처를 남겨주시면 리포트를 보내드리고 직접 연락드리겠습니다.",
-    disclaimer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
+    disclaimer: "여러 학원에서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
     youMentioned: (answerText: string) => `이렇게 답변해 주셨죠: "${answerText}" — `,
     closingSchools: (pillarName: string) =>
       `Chekki Schools — 자동 리포트 생성과 한국어 번역까지 지원합니다 — 를 활용하면 ${pillarName} 영역의 격차 대부분을 줄일 수 있습니다.`,

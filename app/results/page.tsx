@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { scoreAssessment, Answers } from "@/lib/scoring";
-import { questions } from "@/lib/questions";
+import { questions, Pillar } from "@/lib/questions";
 import { useLang, pick } from "@/lib/i18n";
 import { strings } from "@/lib/strings";
 
@@ -40,22 +40,29 @@ export default function Results() {
   // pillar's opportunity with the director's actual answer instead of a
   // generic, score-band-only recommendation. Applied to every pillar, not
   // just the weakest, so the whole report reads as specific to their answers.
-  function weakestAnswerText(pillarId: string): string | null {
-    let worstText: string | null = null;
+  function worstAnswer(pillarId: string): { questionId: string; text: string } | null {
+    let worst: { questionId: string; text: string } | null = null;
     let worstPoints = Infinity;
     for (const q of questions.filter((q) => q.pillarId === pillarId)) {
       const opt = q.options.find((o) => o.label === answers[q.id]);
       if (opt && opt.points < worstPoints) {
         worstPoints = opt.points;
-        worstText = pick(opt.text, lang);
+        worst = { questionId: q.id, text: pick(opt.text, lang) };
       }
     }
-    return worstText;
+    return worst;
   }
 
-  function personalizedStepFor(pillarId: string, nextStepText: string): string {
-    const answer = weakestAnswerText(pillarId);
-    return answer ? t.youMentioned(answer) + nextStepText : nextStepText;
+  // A pillar can span more than one underlying problem (teaching covers both
+  // in-class leveled tracks and the homework question) — pillar.nextStep only
+  // fits one of them, so swap in nextStepByQuestion when the quoted answer
+  // came from a question that needs a different recommendation.
+  function personalizedStepFor(pillar: Pillar, fallbackNextStep: string): string {
+    const worst = worstAnswer(pillar.id);
+    if (!worst) return fallbackNextStep;
+    const override = pillar.nextStepByQuestion?.[worst.questionId];
+    const stepText = override ? pick(override, lang) : fallbackNextStep;
+    return t.youMentioned(worst.text) + stepText;
   }
 
   async function submit() {
@@ -93,7 +100,7 @@ export default function Results() {
             maxRaw: p.maxRaw,
             isStrong: p.isStrong,
             blurb: p.isStrong ? null : pick(p.pillar.weakestBlurb, lang),
-            nextStep: p.isStrong ? null : personalizedStepFor(p.pillar.id, pick(p.pillar.nextStep, lang)),
+            nextStep: p.isStrong ? null : personalizedStepFor(p.pillar, pick(p.pillar.nextStep, lang)),
           })),
         }),
       });
@@ -128,7 +135,7 @@ export default function Results() {
     );
   }
 
-  const personalizedNextStep = personalizedStepFor(result.weakestPillar.id, pick(result.weakestPillar.nextStep, lang));
+  const personalizedNextStep = personalizedStepFor(result.weakestPillar, pick(result.weakestPillar.nextStep, lang));
   // Two shipped products map to two pillars: Chekki Schools (a school-run
   // tool) fits parentComm, the parent-facing homework helper fits teaching
   // — pitched as a partnership since the director isn't the end user, they'd
@@ -185,7 +192,7 @@ export default function Results() {
                   <>
                     <p className="font-body text-sm text-text-main/70 leading-relaxed">{pick(pillar.weakestBlurb, lang)}</p>
                     <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-1">
-                      {personalizedStepFor(pillar.id, pick(pillar.nextStep, lang))}
+                      {personalizedStepFor(pillar, pick(pillar.nextStep, lang))}
                     </p>
                   </>
                 )}

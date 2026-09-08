@@ -28,7 +28,7 @@ export const bands: Band[] = [
   { name: { en: "Digitizing", ko: "디지털 전환 중" }, min: 37, max: 52,
     intro: {
       en: "You've already got real pieces in place — most of what's left is connecting them, not starting from scratch.",
-      ko: "이미 실질적인 기반을 갖추고 계십니다. 남은 과제는 처음부터 새로 시작하는 것이 아니라, 있는 것들을 서로 연결하는 일입니다.",
+      ko: "이미 실질적인 기반을 갖추고 계십니다. 남은 과제는 처음부터 새로 시작하는 것이 아니라, 이미 갖춘 요소들을 서로 연결하는 일입니다.",
     },
     blurb: {
       en: "Spreadsheets and standalone tools exist but don't talk to each other — likely manual double-entry costing more staff time than anyone's tracking.",
