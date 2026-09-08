@@ -47,22 +47,23 @@ function escapeHtml(value: string): string {
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-type PillarResult = { name: string; raw: number; maxRaw: number; blurb: string | null; nextStep: string | null };
+type PillarResult = { name: string; raw: number; maxRaw: number; blurb: string | null; nextStep: string | null; isStrong: boolean };
 
-function pillarRowsHtml(pillarResults: PillarResult[]): string {
+function pillarRowsHtml(pillarResults: PillarResult[], strongNote: string): string {
   return pillarResults
     .map(
       (p) => `
         <tr>
-          <td style="padding: 10px 0; border-top: 1px solid #27272a;">
+          <td style="padding: 10px 0; border-top: 1px solid #e4e4e7;">
             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
               <tr>
-                <td style="font-size: 14px; color: #f4f4f5; font-weight: 600;">${escapeHtml(p.name)}</td>
-                <td align="right" style="font-size: 14px; color: #a1a1aa; font-weight: 400;">${p.raw}/${p.maxRaw}</td>
+                <td style="font-size: 14px; color: #18181b; font-weight: 600;">${escapeHtml(p.name)}</td>
+                <td align="right" style="font-size: 14px; color: #71717a; font-weight: 400;">${p.raw}/${p.maxRaw}</td>
               </tr>
             </table>
-            ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #d4d4d8; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
-            ${p.nextStep ? `<p style="margin: 6px 0 0 0; font-size: 13px; color: #f97316; line-height: 1.5;"><strong>${escapeHtml(p.nextStep)}</strong></p>` : ""}
+            ${p.isStrong ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #15803d; line-height: 1.5;">${escapeHtml(strongNote)}</p>` : ""}
+            ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #52525b; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
+            ${p.nextStep ? `<p style="margin: 6px 0 0 0; font-size: 13px; color: #c2410c; line-height: 1.5;"><strong>${escapeHtml(p.nextStep)}</strong></p>` : ""}
           </td>
         </tr>`
     )
@@ -131,11 +132,11 @@ export async function POST(req: NextRequest) {
             outOf: " / 84",
             weakestLabel: "가장 먼저 살펴볼 영역",
             allPillarsLabel: "영역별 전체 결과",
-            ctaSchools: "Chekki Schools 살펴보기",
-            ctaPartnership: "파트너십 알아보기",
-            ctaProductCaption: "Chekki가 실제로 무엇을 하는지 확인해보세요",
-            ctaBook: `${weakestPillarSafe} 상담 예약하기`,
-            ctaBookCaption: "15분, 이 영역 하나에 집중한 상담입니다",
+            strongNote: "탄탄합니다 — 지금은 다른 영역에 집중하셔도 좋습니다.",
+            ctaTry: "Chekki 사용해보기",
+            ctaTryCaption: "Chekki가 어떻게 도움이 되는지 확인해보세요",
+            ctaBook: "가장 취약한 영역에 대해 더 이야기해보고 싶으신가요?",
+            ctaBookCaption: "편하신 시간을 예약해보세요",
           }
         : {
             subject: `Your Hagwon AI Readiness report — ${score}/84 (${band})`,
@@ -143,11 +144,11 @@ export async function POST(req: NextRequest) {
             outOf: " / 84",
             weakestLabel: "Where to look first",
             allPillarsLabel: "Full breakdown by pillar",
-            ctaSchools: "See how Chekki Schools works",
-            ctaPartnership: "Explore a partnership",
-            ctaProductCaption: "See what Chekki actually does",
-            ctaBook: `Discuss your ${weakestPillarSafe} gap`,
-            ctaBookCaption: "15 minutes, focused on this one gap",
+            strongNote: "Solid — this one's already working, so focus your energy elsewhere first.",
+            ctaTry: "Try Chekki",
+            ctaTryCaption: "See how Chekki can help",
+            ctaBook: "Want to discuss your weakest pillar more?",
+            ctaBookCaption: "Set up a time that works for you",
           };
 
       // Only the teaching pillar maps to the parent-facing homework helper,
@@ -166,11 +167,10 @@ export async function POST(req: NextRequest) {
       )}`;
 
       const productHref = isHomeworkFit ? "https://chekkiai.com" : "https://chekkiai.com/schools";
-      const productLabel = isHomeworkFit ? copy.ctaPartnership : copy.ctaSchools;
-      const productBtnHtml = `<div style="display: inline-block; margin-right: 24px;"><a href="${productHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${productLabel}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaProductCaption}</p></div>`;
+      const productBtnHtml = `<div style="display: inline-block; margin-right: 24px;"><a href="${productHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaTry}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaTryCaption}</p></div>`;
       const bookHref = bookingUrl ? escapeHtml(bookingUrl) : notifyEmail ? mailtoBook : null;
       const bookBtnHtml = bookHref
-        ? `<div style="display: inline-block;"><a href="${bookHref}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaBookCaption}</p></div>`
+        ? `<div style="display: inline-block;"><a href="${bookHref}" style="display: inline-block; border: 1px solid #f97316; color: #c2410c; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaBookCaption}</p></div>`
         : "";
       const ctaHtml = productBtnHtml + bookBtnHtml;
 
@@ -180,27 +180,27 @@ export async function POST(req: NextRequest) {
         ...(notifyEmail ? { reply_to: notifyEmail } : {}),
         subject: copy.subject,
         html: `
-          <div style="font-family: 'Bricolage Grotesque', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #030305; color: #f4f4f5; border-radius: 16px;">
-            <p style="font-size: 20px; font-weight: 900; margin: 0 0 16px 0; color: #ffffff;">Chekki<span style="color: #f97316;">ai</span></p>
-            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0;">${copy.eyebrow}</p>
-            <p style="font-size: 40px; font-weight: 900; color: #ffffff; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #a1a1aa;">${copy.outOf}</span></p>
-            <h1 style="font-size: 22px; color: #ffffff; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
-            <p style="font-size: 14px; color: #d4d4d8; line-height: 1.6; margin: 0 0 10px 0;">
+          <div style="font-family: 'Bricolage Grotesque', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #ffffff; color: #18181b; border: 1px solid #e4e4e7; border-radius: 16px;">
+            <p style="font-size: 20px; font-weight: 900; margin: 0 0 16px 0; color: #18181b;">Chekki<span style="color: #f97316;">ai</span></p>
+            <p style="font-size: 13px; color: #c2410c; margin: 0 0 8px 0;">${copy.eyebrow}</p>
+            <p style="font-size: 40px; font-weight: 900; color: #18181b; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #71717a;">${copy.outOf}</span></p>
+            <h1 style="font-size: 22px; color: #18181b; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
+            <p style="font-size: 14px; color: #3f3f46; line-height: 1.6; margin: 0 0 10px 0;">
               ${escapeHtml(bandIntro)}
             </p>
             <p style="font-size: 12px; color: #71717a; line-height: 1.5; margin: 0 0 24px 0;">
               ${escapeHtml(disclaimer)}
             </p>
-            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0; font-weight: 600;">${copy.weakestLabel}</p>
-            <h2 style="font-size: 18px; color: #ffffff; margin: 0 0 8px 0;">${escapeHtml(weakestPillar)}</h2>
-            <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin: 0 0 10px 0;">${escapeHtml(weakestBlurb)}</p>
-            <p style="font-size: 13px; color: #f97316; line-height: 1.6; margin: 0;"><strong>${escapeHtml(weakestNextStep)}</strong></p>
-            <p style="font-size: 13px; color: #f97316; line-height: 1.6; margin: 6px 0 24px 0;"><strong>${escapeHtml(weakestNextStep2)}</strong></p>
-            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0; font-weight: 600;">${copy.allPillarsLabel}</p>
+            <p style="font-size: 13px; color: #c2410c; margin: 0 0 8px 0; font-weight: 600;">${copy.weakestLabel}</p>
+            <h2 style="font-size: 18px; color: #18181b; margin: 0 0 8px 0;">${escapeHtml(weakestPillar)}</h2>
+            <p style="font-size: 13px; color: #3f3f46; line-height: 1.6; margin: 0 0 10px 0;">${escapeHtml(weakestBlurb)}</p>
+            <p style="font-size: 13px; color: #c2410c; line-height: 1.6; margin: 0;"><strong>${escapeHtml(weakestNextStep)}</strong></p>
+            <p style="font-size: 13px; color: #c2410c; line-height: 1.6; margin: 6px 0 24px 0;"><strong>${escapeHtml(weakestNextStep2)}</strong></p>
+            <p style="font-size: 13px; color: #c2410c; margin: 0 0 8px 0; font-weight: 600;">${copy.allPillarsLabel}</p>
             <table style="width: 100%; border-collapse: collapse;">
-              ${pillarRowsHtml(pillarResults)}
+              ${pillarRowsHtml(pillarResults, copy.strongNote)}
             </table>
-            <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin-top: 24px;">
+            <p style="font-size: 13px; color: #3f3f46; line-height: 1.6; margin-top: 24px;">
               ${escapeHtml(closingQuestion)}
             </p>
             ${ctaHtml ? `<div style="margin-top: 14px;">${ctaHtml}</div>` : ""}

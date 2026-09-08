@@ -90,6 +90,7 @@ export default function Results() {
             name: pick(p.pillar.name, lang),
             raw: p.raw,
             maxRaw: p.maxRaw,
+            isStrong: p.isStrong,
             blurb: p.isStrong ? null : pick(p.pillar.weakestBlurb, lang),
             nextStep: p.isStrong ? null : personalizedStepFor(p.pillar.id, pick(p.pillar.nextStep, lang)),
           })),
@@ -175,7 +176,9 @@ export default function Results() {
                   <span>{pick(pillar.name, lang)}</span>
                   <span className="text-text-muted">{raw}/{maxRaw}</span>
                 </div>
-                {!isStrong && pillar.id !== result.weakestPillar.id && (
+                {isStrong ? (
+                  <p className="font-body text-sm text-emerald-600 dark:text-emerald-400 leading-relaxed">{t.strongNote}</p>
+                ) : (
                   <>
                     <p className="font-body text-sm text-text-main/70 leading-relaxed">{pick(pillar.weakestBlurb, lang)}</p>
                     <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-1">
@@ -227,9 +230,9 @@ export default function Results() {
                 rel="noopener noreferrer"
                 className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
               >
-                {isHomeworkFit ? t.ctaPartnership : t.ctaSchools}
+                {t.ctaTry}
               </a>
-              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaProductCaption}</p>
+              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaTryCaption}</p>
             </div>
             <div>
               {bookingUrl ? (
@@ -239,17 +242,17 @@ export default function Results() {
                   rel="noopener noreferrer"
                   className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
                 >
-                  {t.ctaBook(pick(result.weakestPillar.name, lang))}
+                  {t.ctaBook}
                 </a>
               ) : (
                 process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
                   <a
                     href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
-                      `${t.ctaBook(pick(result.weakestPillar.name, lang))} — ${hagwon || name || email}`
+                      `${t.ctaBook} — ${hagwon || name || email}`
                     )}&body=${encodeURIComponent(t.ctaBookBody(result.weightedTotal))}`}
                     className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
                   >
-                    {t.ctaBook(pick(result.weakestPillar.name, lang))}
+                    {t.ctaBook}
                   </a>
                 )
               )}
