@@ -149,7 +149,7 @@ export async function POST(req: NextRequest) {
             strongNote: "탄탄합니다 — 지금은 다른 영역에 집중하셔도 좋습니다.",
             ctaTry: "Chekki 사용해보기",
             ctaTryCaption: "Chekki가 어떻게 도움이 되는지 확인해보세요",
-            ctaBook: "가장 취약한 영역에 대해 더 이야기해보고 싶으신가요?",
+            ctaBook: `${weakestPillarSafe}에 대해 더 이야기해보고 싶으신가요?`,
             ctaBookCaption: "편하신 시간을 예약해보세요",
           }
         : {
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
             strongNote: "Solid — this one's already working, so focus your energy elsewhere first.",
             ctaTry: "Try Chekki",
             ctaTryCaption: "See how Chekki can help",
-            ctaBook: "Want to discuss your weakest pillar more?",
+            ctaBook: `Want to discuss your ${weakestPillarSafe} more?`,
             ctaBookCaption: "Set up a time that works for you",
           };
 

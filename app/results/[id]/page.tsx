@@ -114,17 +114,17 @@ export default async function ReportPermalink({ params }: { params: { id: string
                 rel="noopener noreferrer"
                 className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90"
               >
-                {t.ctaBook}
+                {t.ctaBook(report.weakestPillar)}
               </a>
             ) : (
               notifyEmail && (
                 <a
-                  href={`mailto:${notifyEmail}?subject=${encodeURIComponent(`${t.ctaBook} — ${report.weakestPillar}`)}&body=${encodeURIComponent(
+                  href={`mailto:${notifyEmail}?subject=${encodeURIComponent(`${t.ctaBook(report.weakestPillar)} — ${report.weakestPillar}`)}&body=${encodeURIComponent(
                     t.ctaBookBody(report.score)
                   )}`}
                   className="inline-block border border-brand-orange text-brand-orange font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90"
                 >
-                  {t.ctaBook}
+                  {t.ctaBook(report.weakestPillar)}
                 </a>
               )
             )}
