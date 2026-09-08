@@ -1,9 +1,9 @@
 export const strings = {
   en: {
     eyebrow: "Free, 4-minute quiz",
-    headline: "How much of your hagwon still runs by hand?",
-    body: "A quick check on parent updates, attendance, and teaching. Get your score and the first thing to fix.",
-    cta: "Start the quiz",
+    headline: "Is your hagwon's safety and communication as good as parents assume?",
+    body: "A free 4-minute check across parent communication, safety, and five other areas — get your score and see what can be fixed today.",
+    cta: "See your score",
     questionOf: (current: number, total: number) => `Question ${current} of ${total}`,
     noneMatchHint: "None of these quite fit? Pick the closest and tell us more at the end.",
     back: "Back",
@@ -37,9 +37,9 @@ export const strings = {
   },
   ko: {
     eyebrow: "무료 4분 진단",
-    headline: "우리 학원, 아직 수작업으로 돌아가고 있지 않나요?",
-    body: "학부모 소통, 출결, 수업 방식을 4분 만에 점검해보세요. 점수와 가장 먼저 고칠 점을 알려드립니다.",
-    cta: "진단 시작하기",
+    headline: "우리 학원의 안전과 소통, 학부모님이 생각하는 만큼 잘 되고 있을까요?",
+    body: "학부모 소통, 안전 등 7가지 영역을 4분 만에 무료로 점검해보세요. 점수를 확인하고 오늘 바로 고칠 점을 알아보세요.",
+    cta: "내 점수 확인하기",
     questionOf: (current: number, total: number) => `${total}문항 중 ${current}번째`,
     noneMatchHint: "딱 맞는 보기가 없으신가요? 가장 가까운 항목을 고르시고, 마지막에 자세히 알려주세요.",
     back: "이전",
