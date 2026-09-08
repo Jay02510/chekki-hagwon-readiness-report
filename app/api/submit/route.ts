@@ -49,24 +49,26 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type PillarResult = { name: string; raw: number; maxRaw: number; blurb: string | null; nextStep: string | null; isStrong: boolean };
 
+// Single-level rows (no table nested inside a table cell) — Gmail's
+// heuristic for auto-collapsing "quoted content" misfires on tables nested
+// a third level deep, silently hiding whole sections behind a "..." toggle.
 function pillarRowsHtml(pillarResults: PillarResult[], strongNote: string): string {
   return pillarResults
-    .map(
-      (p) => `
+    .map((p) => {
+      const noteHtml = p.isStrong
+        ? `<tr><td colspan="2" style="padding: 2px 0 10px 0;"><p style="margin: 0; font-size: 13px; color: #15803d; line-height: 1.5;">${escapeHtml(strongNote)}</p></td></tr>`
+        : `${p.blurb ? `<tr><td colspan="2" style="padding: 2px 0 0 0;"><p style="margin: 0; font-size: 13px; color: #52525b; line-height: 1.5;">${escapeHtml(p.blurb)}</p></td></tr>` : ""}${
+            p.nextStep
+              ? `<tr><td colspan="2" style="padding: 4px 0 10px 0;"><p style="margin: 0; font-size: 13px; color: #c2410c; line-height: 1.5;"><strong>${escapeHtml(p.nextStep)}</strong></p></td></tr>`
+              : ""
+          }`;
+      return `
         <tr>
-          <td style="padding: 10px 0; border-top: 1px solid #e4e4e7;">
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse: collapse;">
-              <tr>
-                <td style="font-size: 14px; color: #18181b; font-weight: 600;">${escapeHtml(p.name)}</td>
-                <td align="right" style="font-size: 14px; color: #71717a; font-weight: 400;">${p.raw}/${p.maxRaw}</td>
-              </tr>
-            </table>
-            ${p.isStrong ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #15803d; line-height: 1.5;">${escapeHtml(strongNote)}</p>` : ""}
-            ${p.blurb ? `<p style="margin: 4px 0 0 0; font-size: 13px; color: #52525b; line-height: 1.5;">${escapeHtml(p.blurb)}</p>` : ""}
-            ${p.nextStep ? `<p style="margin: 6px 0 0 0; font-size: 13px; color: #c2410c; line-height: 1.5;"><strong>${escapeHtml(p.nextStep)}</strong></p>` : ""}
-          </td>
-        </tr>`
-    )
+          <td style="padding: 10px 0 0 0; border-top: 1px solid #e4e4e7; font-size: 14px; color: #18181b; font-weight: 600;">${escapeHtml(p.name)}</td>
+          <td align="right" style="padding: 10px 0 0 0; border-top: 1px solid #e4e4e7; font-size: 14px; color: #71717a; font-weight: 400;">${p.raw}/${p.maxRaw}</td>
+        </tr>
+        ${noteHtml}`;
+    })
     .join("");
 }
 
