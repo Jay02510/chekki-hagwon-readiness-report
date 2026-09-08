@@ -15,11 +15,15 @@ export const strings = {
     leadIn: "Want the full breakdown in your inbox — with the steps to raise your score? Leave your info and I'll send it over and follow up directly.",
     disclaimer: "This is a quick gut-check based on patterns we see across hagwons, not a formal audit.",
     youMentioned: (answerText: string) => `You mentioned: "${answerText}" — `,
-    closingQuestion: (hook: string, pillarName: string) =>
-      `Chekki's ${hook} would close most of this ${pillarName} gap early — want to see how that works, or would a deeper audit make more sense first?`,
-    ctaProducts: "Show me Chekki's products",
+    // Only Parent Communication & Reporting has a shipped product answer
+    // (Chekki Schools) — every other pillar routes to a call instead of a
+    // product pitch, so the CTA never claims something that doesn't exist yet.
+    closingSchools: (pillarName: string) =>
+      `Chekki Schools — automated class reports with Korean translation built in — would close most of this ${pillarName} gap.`,
+    closingOther: "This is common, and it's usually worth a closer look before deciding what to fix first.",
+    ctaSchools: "See how Chekki Schools works",
+    ctaBook: "Book a 15-minute call",
     ctaAudit: "Request a deeper audit",
-    ctaProductsBody: (score: number) => `Hi, following my AI Readiness result (${score}/72), I'd like to see how Chekki's existing products can help.`,
     ctaAuditBody: (score: number) => `Hi, following my AI Readiness result (${score}/72), I'd like to set up a deeper audit to identify areas of improvement.`,
     namePlaceholder: "Your name",
     hagwonPlaceholder: "Hagwon name",
@@ -51,11 +55,12 @@ export const strings = {
     leadIn: "전체 리포트와 함께, 점수를 올릴 수 있는 구체적인 방법도 함께 안내해 드릴까요? 연락처를 남겨주시면 리포트를 보내드리고 직접 연락드리겠습니다.",
     disclaimer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
     youMentioned: (answerText: string) => `이렇게 답변해 주셨죠: "${answerText}" — `,
-    closingQuestion: (hook: string, pillarName: string) =>
-      `Chekki의 ${hook} 기능을 활용하면 ${pillarName} 영역의 격차 대부분을 초기에 줄일 수 있습니다 — 어떻게 작동하는지 살펴보시겠어요, 아니면 심층 진단이 먼저 필요하실까요?`,
-    ctaProducts: "Chekki 제품 살펴보기",
+    closingSchools: (pillarName: string) =>
+      `Chekki Schools — 자동 리포트 생성과 한국어 번역까지 지원합니다 — 를 활용하면 ${pillarName} 영역의 격차 대부분을 줄일 수 있습니다.`,
+    closingOther: "많은 학원들이 겪는 부분이며, 무엇부터 손볼지 정하기 전에 자세히 살펴볼 가치가 있습니다.",
+    ctaSchools: "Chekki Schools 살펴보기",
+    ctaBook: "15분 상담 예약하기",
     ctaAudit: "심층 진단 요청하기",
-    ctaProductsBody: (score: number) => `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. Chekki의 기존 제품이 어떻게 도움이 될 수 있는지 안내받고 싶습니다.`,
     ctaAuditBody: (score: number) => `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. 개선점을 자세히 짚어보는 심층 진단을 요청하고 싶습니다.`,
     namePlaceholder: "이름",
     hagwonPlaceholder: "학원 이름",

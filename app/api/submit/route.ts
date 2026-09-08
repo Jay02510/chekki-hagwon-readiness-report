@@ -88,12 +88,12 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const {
     name, hagwon, contact, email, feedback, score, band, bandIntro,
-    weakestPillar, weakestBlurb, weakestNextStep, weakestNextStep2,
+    weakestPillar, weakestPillarId, weakestBlurb, weakestNextStep, weakestNextStep2,
     closingQuestion, disclaimer, pillarResults, lang,
   } = body as {
     name: string; hagwon: string; contact: string; email: string; feedback?: string;
     score: number; band: string; bandIntro: string;
-    weakestPillar: string; weakestBlurb: string; weakestNextStep: string; weakestNextStep2: string;
+    weakestPillar: string; weakestPillarId: string; weakestBlurb: string; weakestNextStep: string; weakestNextStep2: string;
     closingQuestion: string; disclaimer: string; pillarResults: PillarResult[];
     lang?: "en" | "ko";
   };
@@ -130,7 +130,8 @@ export async function POST(req: NextRequest) {
             outOf: " / 72",
             weakestLabel: "가장 먼저 살펴볼 영역",
             allPillarsLabel: "영역별 전체 결과",
-            ctaProducts: "Chekki 제품 살펴보기",
+            ctaSchools: "Chekki Schools 살펴보기",
+            ctaBook: "15분 상담 예약하기",
             ctaAudit: "심층 진단 요청하기",
           }
         : {
@@ -139,21 +140,19 @@ export async function POST(req: NextRequest) {
             outOf: " / 72",
             weakestLabel: "Where to look first",
             allPillarsLabel: "Full breakdown by pillar",
-            ctaProducts: "Show me Chekki's products",
+            ctaSchools: "See how Chekki Schools works",
+            ctaBook: "Book a 15-minute call",
             ctaAudit: "Request a deeper audit",
           };
 
-      // Reply-ready mailto links so the closing question has an actual way
-      // to answer instead of just asking the reader to "reply" with no
-      // prefilled destination.
+      // Chekki Schools is the only shipped product today — only pitch it when
+      // Parent Communication & Reporting is the actual weakest pillar. Every
+      // other pillar routes to a booking link (or a mailto fallback if no
+      // booking link is configured yet) instead of a product that doesn't
+      // exist for that pillar yet.
+      const isSchoolsFit = weakestPillarId === "parentComm";
+      const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
       const replyTarget = notifyEmail || fromAddress.replace(/^.*<(.+)>$/, "$1");
-      const mailtoProducts = `mailto:${replyTarget}?subject=${encodeURIComponent(
-        `${copy.ctaProducts} — ${hagwon || name || email}`
-      )}&body=${encodeURIComponent(
-        isKo
-          ? `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. Chekki의 기존 제품이 어떻게 도움이 될 수 있는지 안내받고 싶습니다.`
-          : `Hi, following my AI Readiness result (${score}/72), I'd like to see how Chekki's existing products can help.`
-      )}`;
       const mailtoAudit = `mailto:${replyTarget}?subject=${encodeURIComponent(
         `${copy.ctaAudit} — ${hagwon || name || email}`
       )}&body=${encodeURIComponent(
@@ -161,6 +160,14 @@ export async function POST(req: NextRequest) {
           ? `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. 개선점을 자세히 짚어보는 심층 진단을 요청하고 싶습니다.`
           : `Hi, following my AI Readiness result (${score}/72), I'd like to set up a deeper audit to identify areas of improvement.`
       )}`;
+
+      const ctaHtml = isSchoolsFit
+        ? `<a href="https://chekkiai.com/schools" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaSchools}</a>`
+        : bookingUrl
+        ? `<a href="${escapeHtml(bookingUrl)}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
+        : notifyEmail
+        ? `<a href="${mailtoAudit}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaAudit}</a>`
+        : "";
 
       await sendEmail(resendKey, {
         from: fromAddress,
@@ -191,16 +198,7 @@ export async function POST(req: NextRequest) {
             <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin-top: 24px;">
               ${escapeHtml(closingQuestion)}
             </p>
-            <table role="presentation" cellpadding="0" cellspacing="0" style="margin-top: 14px;">
-              <tr>
-                <td style="padding-right: 10px; padding-bottom: 10px;">
-                  <a href="${mailtoProducts}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaProducts}</a>
-                </td>
-                <td style="padding-bottom: 10px;">
-                  <a href="${mailtoAudit}" style="display: inline-block; background-color: transparent; border: 1px solid #3f3f46; color: #f4f4f5; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaAudit}</a>
-                </td>
-              </tr>
-            </table>
+            ${ctaHtml ? `<div style="margin-top: 14px;">${ctaHtml}</div>` : ""}
           </div>
         `,
       });

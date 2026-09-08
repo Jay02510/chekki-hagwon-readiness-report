@@ -69,6 +69,7 @@ export default function Results() {
           band: pick(result.band.name, lang),
           bandIntro: pick(result.band.intro, lang),
           weakestPillar: pick(result.weakestPillar.name, lang),
+          weakestPillarId: result.weakestPillar.id,
           weakestBlurb: pick(result.weakestPillar.weakestBlurb, lang),
           weakestNextStep: personalizedNextStep,
           weakestNextStep2: pick(result.weakestPillar.nextStep2, lang),
@@ -118,7 +119,12 @@ export default function Results() {
   const weakestAnswer = weakestAnswerText(result.weakestPillar.id);
   const weakestNextStepText = pick(result.weakestPillar.nextStep, lang);
   const personalizedNextStep = weakestAnswer ? t.youMentioned(weakestAnswer) + weakestNextStepText : weakestNextStepText;
-  const closingText = t.closingQuestion(pick(result.weakestPillar.chekkiHook, lang), pick(result.weakestPillar.name, lang));
+  // Chekki Schools is the only shipped product today — only pitch it when
+  // Parent Communication & Reporting is the actual weakest pillar. Every
+  // other pillar routes to a call instead of a product that doesn't exist yet.
+  const isSchoolsFit = result.weakestPillar.id === "parentComm";
+  const closingText = isSchoolsFit ? t.closingSchools(pick(result.weakestPillar.name, lang)) : t.closingOther;
+  const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
 
   return (
     <div>
@@ -197,25 +203,35 @@ export default function Results() {
         <div>
           <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
           <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{closingText}</p>
-          {process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
-            <div className="flex flex-wrap gap-3">
-              <a
-                href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
-                  `${t.ctaProducts} — ${hagwon || name || email}`
-                )}&body=${encodeURIComponent(t.ctaProductsBody(result.weightedTotal))}`}
-                className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-              >
-                {t.ctaProducts}
-              </a>
+          {isSchoolsFit ? (
+            <a
+              href="https://chekkiai.com/schools"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+            >
+              {t.ctaSchools}
+            </a>
+          ) : bookingUrl ? (
+            <a
+              href={bookingUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+            >
+              {t.ctaBook}
+            </a>
+          ) : (
+            process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
               <a
                 href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
                   `${t.ctaAudit} — ${hagwon || name || email}`
                 )}&body=${encodeURIComponent(t.ctaAuditBody(result.weightedTotal))}`}
-                className="inline-block bg-transparent border border-brand-border text-text-main font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:border-brand-orange/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
+                className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
               >
                 {t.ctaAudit}
               </a>
-            </div>
+            )
           )}
         </div>
       )}
