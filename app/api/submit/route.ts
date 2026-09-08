@@ -104,8 +104,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "A valid email is required." }, { status: 400 });
   }
 
+  // Full report snapshot is stored alongside the lead fields so /results/[id]
+  // can render the exact same report back later — a permalink, without
+  // needing the visitor's own browser/localStorage.
+  let reportId: string | null = null;
   if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-    await adminDb.collection("readiness_submissions").add({
+    const docRef = await adminDb.collection("readiness_submissions").add({
       name,
       hagwon,
       contact,
@@ -113,9 +117,19 @@ export async function POST(req: NextRequest) {
       feedback: feedback || null,
       score,
       band,
+      bandIntro,
       weakestPillar,
+      weakestPillarId,
+      weakestBlurb,
+      weakestNextStep,
+      weakestNextStep2,
+      closingQuestion,
+      disclaimer,
+      pillarResults,
+      lang: lang || "en",
       createdAt: new Date().toISOString(),
     });
+    reportId = docRef.id;
   }
 
   const resendKey = process.env.RESEND_API_KEY;
@@ -179,8 +193,20 @@ export async function POST(req: NextRequest) {
         to: [email],
         ...(notifyEmail ? { reply_to: notifyEmail } : {}),
         subject: copy.subject,
-        html: `
-          <div style="font-family: 'Bricolage Grotesque', sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background-color: #ffffff; color: #18181b; border: 1px solid #e4e4e7; border-radius: 16px;">
+        html: `<!DOCTYPE html>
+<html lang="${isKo ? "ko" : "en"}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>${copy.subject}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f4f4f5" style="background-color: #f4f4f5;">
+<tr><td align="center" style="padding: 24px 12px;">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="max-width: 600px; width: 100%; background-color: #ffffff; border: 1px solid #e4e4e7; border-radius: 16px;">
+<tr><td style="font-family: 'Bricolage Grotesque', sans-serif; padding: 24px; color: #18181b;">
             <p style="font-size: 20px; font-weight: 900; margin: 0 0 16px 0; color: #18181b;">Chekki<span style="color: #f97316;">ai</span></p>
             <p style="font-size: 13px; color: #c2410c; margin: 0 0 8px 0;">${copy.eyebrow}</p>
             <p style="font-size: 40px; font-weight: 900; color: #18181b; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #71717a;">${copy.outOf}</span></p>
@@ -197,15 +223,20 @@ export async function POST(req: NextRequest) {
             <p style="font-size: 13px; color: #c2410c; line-height: 1.6; margin: 0;"><strong>${escapeHtml(weakestNextStep)}</strong></p>
             <p style="font-size: 13px; color: #c2410c; line-height: 1.6; margin: 6px 0 24px 0;"><strong>${escapeHtml(weakestNextStep2)}</strong></p>
             <p style="font-size: 13px; color: #c2410c; margin: 0 0 8px 0; font-weight: 600;">${copy.allPillarsLabel}</p>
-            <table style="width: 100%; border-collapse: collapse;">
+            <table role="presentation" style="width: 100%; border-collapse: collapse;">
               ${pillarRowsHtml(pillarResults, copy.strongNote)}
             </table>
             <p style="font-size: 13px; color: #3f3f46; line-height: 1.6; margin-top: 24px;">
               ${escapeHtml(closingQuestion)}
             </p>
             ${ctaHtml ? `<div style="margin-top: 14px;">${ctaHtml}</div>` : ""}
-          </div>
-        `,
+${reportId ? `            <p style="font-size: 12px; margin-top: 24px;"><a href="https://ai-readiness.chekkiai.com/results/${reportId}" style="color: #71717a;">${isKo ? "이 리포트 온라인으로 보기" : "View this report online"}</a></p>` : ""}
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`,
       });
     } catch (e) {
       console.error("Failed to send report email", e);
@@ -239,5 +270,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, id: reportId });
 }

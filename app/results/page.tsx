@@ -22,6 +22,7 @@ export default function Results() {
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [reportId, setReportId] = useState<string | null>(null);
 
   useEffect(() => {
     const raw = localStorage.getItem("hagwon-readiness-answers");
@@ -104,6 +105,8 @@ export default function Results() {
         setError(t.emailError);
         return;
       }
+      const data = await res.json();
+      if (data.id) setReportId(data.id);
       setSubmitted(true);
     } finally {
       setSubmitting(false);
@@ -221,6 +224,15 @@ export default function Results() {
       ) : (
         <div>
           <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
+          {reportId && (
+            <p className="font-body text-xs text-text-muted leading-relaxed mb-4">
+              {t.permalinkLabel}
+              <br />
+              <a href={`/results/${reportId}`} className="text-brand-orange hover:underline break-all">
+                {typeof window !== "undefined" ? window.location.origin : ""}/results/{reportId}
+              </a>
+            </p>
+          )}
           <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{closingText}</p>
           <div className="flex flex-wrap gap-6">
             <div>
