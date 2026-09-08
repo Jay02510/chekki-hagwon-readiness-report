@@ -7,7 +7,7 @@ export default function LangToggle() {
 
   return (
     <div className="flex justify-end mb-6">
-      <div className="inline-flex bg-brand-card border border-white/10 rounded-full p-1 text-xs font-body">
+      <div className="inline-flex bg-brand-card border border-brand-border rounded-full p-1 text-xs font-body">
         {(["en", "ko"] as const).map((l) => (
           <button
             key={l}

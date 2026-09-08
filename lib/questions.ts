@@ -3,7 +3,7 @@ import type { Localized } from "./i18n";
 export type Option = { label: "A" | "B" | "C" | "D"; text: Localized; points: number };
 export type Question = { id: string; pillarId: string; prompt: Localized; options: Option[] };
 export type Pillar = {
-  id: string; name: Localized; weight: number; weakestBlurb: Localized;
+  id: string; name: Localized; weight: number; weakestBlurb: Localized; nextStep: Localized;
 };
 
 export const pillars: Pillar[] = [
@@ -11,36 +11,64 @@ export const pillars: Pillar[] = [
     weakestBlurb: {
       en: "Usually the first thing parents notice — high-visibility fix, and directors consistently underestimate the staff hours recurring manual reports quietly consume.",
       ko: "학부모님이 가장 먼저 체감하는 부분이라 눈에 잘 띄는 개선 포인트입니다. 반복되는 수기 리포트 작성에 드는 직원 시간을 원장님들이 실제보다 적게 체감하는 경우가 많습니다.",
+    },
+    nextStep: {
+      en: "Start with one recurring report (monthly progress notes work well) and move it to a shared template every teacher fills into the same system — that alone cuts the rewrite-from-scratch time before you touch automation.",
+      ko: "반복되는 리포트 하나(월간 진도 안내가 적당합니다)부터 시작해, 모든 선생님이 같은 시스템에 입력하는 공통 양식으로 옮겨보세요. 자동화를 도입하기 전에도 매번 처음부터 작성하는 시간을 크게 줄일 수 있습니다.",
     } },
   { id: "safety", name: { en: "Safety & Peace of Mind", ko: "안전 및 학부모 안심" }, weight: 1.5,
     weakestBlurb: {
       en: "For Korean parents, this is often the single biggest driver of trust and retention — worth fixing even before academic-facing pillars.",
       ko: "한국 학부모님들에게는 이 부분이 신뢰와 재등록을 좌우하는 가장 큰 요소인 경우가 많습니다. 다른 영역보다 먼저 손볼 가치가 있습니다.",
+    },
+    nextStep: {
+      en: "Put a same-day rule in writing: if a student misses a scheduled class with no advance notice, front desk calls the parent within the hour. That single policy closes most of the gap even before any notification system is in place.",
+      ko: "'사전 연락 없이 결석 시, 프론트에서 한 시간 내 학부모님께 연락한다'는 규칙을 문서로 정해두세요. 별도 알림 시스템이 없어도 이 규칙 하나만으로 대부분의 공백을 메울 수 있습니다.",
     } },
   { id: "operations", name: { en: "Operations & Admin", ko: "운영 및 행정 업무" }, weight: 1,
     weakestBlurb: {
       en: "Manual re-entry across attendance, billing, and reports is invisible until you add up the hours.",
       ko: "출결, 청구, 리포트 사이에서 반복되는 수작업 재입력은 시간을 다 합산해보기 전까지는 잘 드러나지 않습니다.",
+    },
+    nextStep: {
+      en: "Pick whichever of attendance, billing, or scheduling currently eats the most staff hours and move that one first — consolidating all three at once is what stalls these projects.",
+      ko: "출결, 청구, 스케줄링 중 직원 시간을 가장 많이 잡아먹는 업무 하나를 골라 먼저 개선하세요. 세 가지를 한 번에 바꾸려는 시도가 오히려 프로젝트를 멈추게 만드는 경우가 많습니다.",
     } },
   { id: "marketing", name: { en: "Marketing & Enrollment", ko: "마케팅 및 신입생 모집" }, weight: 1,
     weakestBlurb: {
       en: "If growth depends on word of mouth alone, it's capped by how fast word travels, not by how good the hagwon actually is.",
       ko: "성장이 입소문에만 의존한다면, 학원이 아무리 좋아도 입소문이 퍼지는 속도만큼만 성장할 수밖에 없습니다.",
+    },
+    nextStep: {
+      en: "Build a simple follow-up checklist for parents who inquire but don't enroll on the spot — even a manual 3-day and 2-week check-in recovers enrollments that currently just go cold.",
+      ko: "상담 후 바로 등록하지 않은 학부모님을 위한 간단한 후속 연락 체크리스트를 만드세요. 수기로라도 3일 후, 2주 후 연락만 챙겨도 지금은 그냥 놓치는 등록을 되살릴 수 있습니다.",
     } },
   { id: "teaching", name: { en: "Teaching & Curriculum Personalization", ko: "수업 및 맞춤형 커리큘럼" }, weight: 1,
     weakestBlurb: {
       en: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room.",
       ko: "획일화된 교재는 잘하는 학생은 지루해하고, 부진한 학생은 같은 반에서 더 뒤처지게 만드는 원인인 경우가 많습니다.",
+    },
+    nextStep: {
+      en: "Introduce even two or three leveled tracks within your existing classes before attempting full per-student personalization — it's the step that unblocks everything after it.",
+      ko: "학생별 완전 맞춤화를 시도하기 전에, 기존 반 안에서 두세 개 레벨 트랙만이라도 먼저 도입해보세요. 이후 단계로 나아가는 데 필요한 첫걸음입니다.",
     } },
   { id: "data", name: { en: "Data & Records", ko: "데이터 및 기록 관리" }, weight: 1,
     weakestBlurb: {
       en: "If you can't quickly answer \"which students need attention right now,\" you're finding out about problems later than you could be.",
       ko: "\"지금 당장 관심이 필요한 학생이 누구인지\" 바로 답할 수 없다면, 문제를 파악할 수 있는 시점보다 더 늦게 알게 되는 셈입니다.",
+    },
+    nextStep: {
+      en: "Move scores and attendance into one shared spreadsheet or system every teacher updates — that single change is what makes a \"who's falling behind\" question answerable at all.",
+      ko: "성적과 출결을 모든 선생님이 함께 업데이트하는 하나의 스프레드시트나 시스템으로 모으세요. 이 한 가지 변화만으로도 '누가 뒤처지고 있는지' 바로 답할 수 있게 됩니다.",
     } },
   { id: "staff", name: { en: "Staff & Culture", ko: "직원 및 조직 문화" }, weight: 1,
     weakestBlurb: {
       en: "Tools don't stick without someone owning adoption — often the real blocker even when other pillars look fine on paper.",
       ko: "누군가 책임지고 도입을 이끌지 않으면 도구는 정착하지 않습니다. 다른 영역이 다 괜찮아 보여도 실제로는 이 부분이 걸림돌인 경우가 많습니다.",
+    },
+    nextStep: {
+      en: "Name one person — even part-time — as the owner of new tools and process changes. Without a named owner, every other fix on this list tends to quietly lapse after a few weeks.",
+      ko: "새로운 도구와 프로세스 변화를 담당할 사람을 한 명 지정하세요. 파트타임이라도 괜찮습니다. 담당자가 없으면 다른 개선 사항들도 몇 주 후 흐지부지되는 경우가 많습니다.",
     } },
 ];
 

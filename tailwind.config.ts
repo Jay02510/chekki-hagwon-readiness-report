@@ -6,12 +6,13 @@ const config: Config = {
     extend: {
       colors: {
         // Matches chekki-ai's locked palette (.tastemaker/style-lock.md) —
-        // dark mode default, one accent (orange), nothing invented here.
-        "brand-dark": "#050505",
-        "brand-card": "#0f1014",
-        "brand-orange": "#f97316",
-        "text-main": "#f4f4f5",
-        "text-muted": "#a1a1aa",
+        // CSS vars so dark (default) and light mode share one set of classes.
+        "brand-dark": "var(--color-brand-dark)",
+        "brand-card": "var(--color-brand-card)",
+        "brand-orange": "var(--color-brand-orange)",
+        "brand-border": "var(--color-brand-border)",
+        "text-main": "var(--color-text-main)",
+        "text-muted": "var(--color-text-muted)",
       },
       fontFamily: {
         display: ["var(--font-bricolage)", "sans-serif"],

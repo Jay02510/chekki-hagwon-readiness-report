@@ -27,7 +27,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="max-w-xl mx-auto px-6 py-16">
           <LangProvider>
             <LangToggle />
-            {children}
+            <div className="bg-brand-card border border-brand-border rounded-3xl p-6 md:p-8">
+              {children}
+            </div>
+            <footer className="text-center mt-10">
+              <a
+                href="https://chekkiai.com"
+                className="font-display font-black text-sm text-text-muted hover:text-text-main transition-colors"
+              >
+                Chekki<span className="text-brand-orange">ai</span>
+              </a>
+            </footer>
           </LangProvider>
         </main>
       </body>
