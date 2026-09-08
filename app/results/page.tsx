@@ -47,13 +47,21 @@ export default function Results() {
           name, hagwon, contact, email, feedback, lang,
           score: result.weightedTotal,
           band: pick(result.band.name, lang),
+          bandIntro: pick(result.band.intro, lang),
           weakestPillar: pick(result.weakestPillar.name, lang),
+          weakestBlurb: pick(result.weakestPillar.weakestBlurb, lang),
+          weakestNextStep: pick(result.weakestPillar.nextStep, lang),
+          weakestNextStep2: pick(result.weakestPillar.nextStep2, lang),
+          closingQuestion: t.closingQuestion,
+          // The weakest pillar's blurb/next-step are sent separately above and
+          // get their own section in the email — omit them here so they're
+          // not shown twice in the per-pillar table.
           pillarResults: result.pillarResults.map((p) => ({
             name: pick(p.pillar.name, lang),
             raw: p.raw,
             maxRaw: p.maxRaw,
-            blurb: p.isStrong ? null : pick(p.pillar.weakestBlurb, lang),
-            nextStep: p.isStrong ? null : pick(p.pillar.nextStep, lang),
+            blurb: p.isStrong || p.pillar.id === result.weakestPillar.id ? null : pick(p.pillar.weakestBlurb, lang),
+            nextStep: p.isStrong || p.pillar.id === result.weakestPillar.id ? null : pick(p.pillar.nextStep, lang),
           })),
         }),
       });
@@ -98,13 +106,16 @@ export default function Results() {
       <p className="font-display font-black text-6xl text-text-main mb-2">{result.weightedTotal}</p>
       <p className="font-body text-text-muted mb-8">{t.outOf}</p>
 
-      <h1 className="font-display font-black text-3xl text-text-main mb-4">{pick(result.band.name, lang)}</h1>
+      <h1 className="font-display font-black text-3xl text-text-main mb-2">{pick(result.band.name, lang)}</h1>
+      <p className="font-body text-text-main/90 leading-relaxed mb-4">{pick(result.band.intro, lang)}</p>
       <p className="font-body text-text-main/80 leading-relaxed mb-8">{pick(result.band.blurb, lang)}</p>
 
       <div className="border-t border-brand-border pt-6 mb-10">
         <p className="font-body text-sm text-brand-orange mb-2">{t.weakestPillarLabel}</p>
         <p className="font-display font-black text-xl text-text-main mb-2">{pick(result.weakestPillar.name, lang)}</p>
-        <p className="font-body text-text-main/80 leading-relaxed">{pick(result.weakestPillar.weakestBlurb, lang)}</p>
+        <p className="font-body text-text-main/80 leading-relaxed mb-3">{pick(result.weakestPillar.weakestBlurb, lang)}</p>
+        <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed">{pick(result.weakestPillar.nextStep, lang)}</p>
+        <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-2">{pick(result.weakestPillar.nextStep2, lang)}</p>
       </div>
 
       {submitted && (
@@ -117,7 +128,7 @@ export default function Results() {
                   <span>{pick(pillar.name, lang)}</span>
                   <span className="text-text-muted">{raw}/{maxRaw}</span>
                 </div>
-                {!isStrong && (
+                {!isStrong && pillar.id !== result.weakestPillar.id && (
                   <>
                     <p className="font-body text-sm text-text-main/70 leading-relaxed">{pick(pillar.weakestBlurb, lang)}</p>
                     <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-1">{pick(pillar.nextStep, lang)}</p>
@@ -156,7 +167,10 @@ export default function Results() {
           </button>
         </div>
       ) : (
-        <p className="font-body text-brand-orange">{t.thanks}</p>
+        <div>
+          <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
+          <p className="font-body text-sm text-text-main/70 leading-relaxed">{t.closingQuestion}</p>
+        </div>
       )}
     </div>
   );

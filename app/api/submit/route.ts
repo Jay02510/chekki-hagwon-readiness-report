@@ -86,9 +86,15 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, hagwon, contact, email, feedback, score, band, weakestPillar, pillarResults, lang } = body as {
+  const {
+    name, hagwon, contact, email, feedback, score, band, bandIntro,
+    weakestPillar, weakestBlurb, weakestNextStep, weakestNextStep2,
+    closingQuestion, pillarResults, lang,
+  } = body as {
     name: string; hagwon: string; contact: string; email: string; feedback?: string;
-    score: number; band: string; weakestPillar: string; pillarResults: PillarResult[];
+    score: number; band: string; bandIntro: string;
+    weakestPillar: string; weakestBlurb: string; weakestNextStep: string; weakestNextStep2: string;
+    closingQuestion: string; pillarResults: PillarResult[];
     lang?: "en" | "ko";
   };
   const isKo = lang === "ko";
@@ -122,16 +128,16 @@ export async function POST(req: NextRequest) {
             subject: `학원 AI 준비도 리포트 — ${score}/72 (${band})`,
             eyebrow: "AI 준비도 진단 결과",
             outOf: " / 72",
-            intro: "영역별 상세 결과는 아래를 확인해주세요. 만점의 75% 미만인 영역에는 해당 영역이 왜 중요한지에 대한 설명을 함께 담았습니다.",
-            fitOutro: "부족한 부분을 Chekki가 어떻게 도와드릴 수 있는지 궁금하시다면, 곧 직접 연락드리고 자세히 안내해 드리겠습니다.",
+            weakestLabel: "가장 먼저 살펴볼 영역",
+            allPillarsLabel: "영역별 전체 결과",
             footer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
           }
         : {
             subject: `Your Hagwon AI Readiness report — ${score}/72 (${band})`,
             eyebrow: "Your Hagwon AI Readiness result",
             outOf: " / 72",
-            intro: "Full breakdown by pillar below. Scores below 75% of max include a note on why that pillar matters.",
-            fitOutro: "Curious how Chekki can help with what's missing? We'll follow up directly to walk through it.",
+            weakestLabel: "Where to look first",
+            allPillarsLabel: "Full breakdown by pillar",
             footer: "This is a quick gut-check based on patterns we see across hagwons, not a formal audit.",
           };
 
@@ -146,14 +152,20 @@ export async function POST(req: NextRequest) {
             <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0;">${copy.eyebrow}</p>
             <p style="font-size: 40px; font-weight: 900; color: #ffffff; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #a1a1aa;">${copy.outOf}</span></p>
             <h1 style="font-size: 22px; color: #ffffff; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
-            <p style="font-size: 14px; color: #a1a1aa; line-height: 1.6; margin: 0 0 24px 0;">
-              ${copy.intro}
+            <p style="font-size: 14px; color: #d4d4d8; line-height: 1.6; margin: 0 0 24px 0;">
+              ${escapeHtml(bandIntro)}
             </p>
+            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0; font-weight: 600;">${copy.weakestLabel}</p>
+            <h2 style="font-size: 18px; color: #ffffff; margin: 0 0 8px 0;">${escapeHtml(weakestPillar)}</h2>
+            <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin: 0 0 10px 0;">${escapeHtml(weakestBlurb)}</p>
+            <p style="font-size: 13px; color: #f97316; line-height: 1.6; margin: 0;"><strong>${escapeHtml(weakestNextStep)}</strong></p>
+            <p style="font-size: 13px; color: #f97316; line-height: 1.6; margin: 6px 0 24px 0;"><strong>${escapeHtml(weakestNextStep2)}</strong></p>
+            <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0; font-weight: 600;">${copy.allPillarsLabel}</p>
             <table style="width: 100%; border-collapse: collapse;">
               ${pillarRowsHtml(pillarResults)}
             </table>
             <p style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin-top: 24px;">
-              ${copy.fitOutro}
+              ${escapeHtml(closingQuestion)}
             </p>
             <p style="font-size: 13px; color: #71717a; margin-top: 12px;">
               ${copy.footer}

@@ -3,7 +3,7 @@ import type { Localized } from "./i18n";
 export type Option = { label: "A" | "B" | "C" | "D"; text: Localized; points: number };
 export type Question = { id: string; pillarId: string; prompt: Localized; options: Option[] };
 export type Pillar = {
-  id: string; name: Localized; weight: number; weakestBlurb: Localized; nextStep: Localized;
+  id: string; name: Localized; weight: number; weakestBlurb: Localized; nextStep: Localized; nextStep2: Localized;
 };
 
 export const pillars: Pillar[] = [
@@ -15,6 +15,10 @@ export const pillars: Pillar[] = [
     nextStep: {
       en: "Start with one recurring report (monthly progress notes work well) and move it to a shared template every teacher fills into the same system — that alone cuts the rewrite-from-scratch time before you touch automation.",
       ko: "반복되는 리포트 하나(월간 진도 안내가 적당합니다)부터 시작해, 모든 선생님이 같은 시스템에 입력하는 공통 양식으로 옮겨보세요. 자동화를 도입하기 전에도 매번 처음부터 작성하는 시간을 크게 줄일 수 있습니다.",
+    },
+    nextStep2: {
+      en: "Set a standing rule for how fast a parent question gets answered (same day is a reasonable bar) — a template only helps if there's also a clear expectation for turnaround.",
+      ko: "학부모님 질문에 얼마나 빨리 답할지 기준을 정해두세요(당일 답변이 적당한 기준입니다). 양식이 있어도 답변 속도에 대한 명확한 기준이 없으면 효과가 반감됩니다.",
     } },
   { id: "safety", name: { en: "Safety & Peace of Mind", ko: "안전 및 학부모 안심" }, weight: 1.5,
     weakestBlurb: {
@@ -24,6 +28,10 @@ export const pillars: Pillar[] = [
     nextStep: {
       en: "Put a same-day rule in writing: if a student misses a scheduled class with no advance notice, front desk calls the parent within the hour. That single policy closes most of the gap even before any notification system is in place.",
       ko: "'사전 연락 없이 결석 시, 프론트에서 한 시간 내 학부모님께 연락한다'는 규칙을 문서로 정해두세요. 별도 알림 시스템이 없어도 이 규칙 하나만으로 대부분의 공백을 메울 수 있습니다.",
+    },
+    nextStep2: {
+      en: "Add arrival/departure notice as a second layer once the no-show rule is working — parents shouldn't have to wonder on a normal day either, not just when something goes wrong.",
+      ko: "결석 대응 규칙이 자리 잡으면, 등하원 알림도 다음 단계로 추가해보세요. 문제가 생겼을 때뿐 아니라 평범한 날에도 학부모님이 불안해하지 않도록 하는 것이 중요합니다.",
     } },
   { id: "operations", name: { en: "Operations & Admin", ko: "운영 및 행정 업무" }, weight: 1,
     weakestBlurb: {
@@ -33,6 +41,10 @@ export const pillars: Pillar[] = [
     nextStep: {
       en: "Pick whichever of attendance, billing, or scheduling currently eats the most staff hours and move that one first — consolidating all three at once is what stalls these projects.",
       ko: "출결, 청구, 스케줄링 중 직원 시간을 가장 많이 잡아먹는 업무 하나를 골라 먼저 개선하세요. 세 가지를 한 번에 바꾸려는 시도가 오히려 프로젝트를 멈추게 만드는 경우가 많습니다.",
+    },
+    nextStep2: {
+      en: "Once that one is off spreadsheets, add automated reminders for whatever's left manual (payment due dates are usually the highest-value one) before tackling the rest.",
+      ko: "그 업무를 스프레드시트에서 벗어나게 한 뒤에는, 남은 수작업 중 자동 리마인더가 필요한 부분(대개 결제일 안내가 가장 효과가 큽니다)을 다음으로 추가하세요.",
     } },
   { id: "marketing", name: { en: "Marketing & Enrollment", ko: "마케팅 및 신입생 모집" }, weight: 1,
     weakestBlurb: {
@@ -42,6 +54,10 @@ export const pillars: Pillar[] = [
     nextStep: {
       en: "Build a simple follow-up checklist for parents who inquire but don't enroll on the spot — even a manual 3-day and 2-week check-in recovers enrollments that currently just go cold.",
       ko: "상담 후 바로 등록하지 않은 학부모님을 위한 간단한 후속 연락 체크리스트를 만드세요. 수기로라도 3일 후, 2주 후 연락만 챙겨도 지금은 그냥 놓치는 등록을 되살릴 수 있습니다.",
+    },
+    nextStep2: {
+      en: "Once follow-up is consistent, add one more discovery channel beyond word of mouth (an active Instagram or Naver Blog is the lowest-effort next step) so growth isn't capped by referral speed alone.",
+      ko: "후속 연락이 자리 잡으면, 입소문 외에 신규 채널을 하나 더 추가해보세요(인스타그램이나 네이버 블로그 운영이 가장 시작하기 쉽습니다). 성장이 입소문 속도에만 갇히지 않도록 하는 것이 목표입니다.",
     } },
   { id: "teaching", name: { en: "Teaching & Curriculum Personalization", ko: "수업 및 맞춤형 커리큘럼" }, weight: 1,
     weakestBlurb: {
@@ -51,6 +67,10 @@ export const pillars: Pillar[] = [
     nextStep: {
       en: "Introduce even two or three leveled tracks within your existing classes before attempting full per-student personalization — it's the step that unblocks everything after it.",
       ko: "학생별 완전 맞춤화를 시도하기 전에, 기존 반 안에서 두세 개 레벨 트랙만이라도 먼저 도입해보세요. 이후 단계로 나아가는 데 필요한 첫걸음입니다.",
+    },
+    nextStep2: {
+      en: "Pick one measurable benchmark (a reading level, an internal test score) and track it consistently per student — without a number to move, \"personalization\" stays a feeling instead of a result.",
+      ko: "측정 가능한 기준(리딩 레벨, 내부 테스트 점수 등) 하나를 정해 학생별로 꾸준히 추적하세요. 움직일 수치가 없으면 '맞춤화'는 결과가 아니라 막연한 느낌에 그치게 됩니다.",
     } },
   { id: "data", name: { en: "Data & Records", ko: "데이터 및 기록 관리" }, weight: 1,
     weakestBlurb: {
@@ -60,6 +80,10 @@ export const pillars: Pillar[] = [
     nextStep: {
       en: "Move scores and attendance into one shared spreadsheet or system every teacher updates — that single change is what makes a \"who's falling behind\" question answerable at all.",
       ko: "성적과 출결을 모든 선생님이 함께 업데이트하는 하나의 스프레드시트나 시스템으로 모으세요. 이 한 가지 변화만으로도 '누가 뒤처지고 있는지' 바로 답할 수 있게 됩니다.",
+    },
+    nextStep2: {
+      en: "Once the data is in one place, set a recurring time (weekly is enough) to actually look at it and flag who needs attention — collecting data only pays off if someone reviews it.",
+      ko: "데이터가 한곳에 모이면, 실제로 살펴보고 관심이 필요한 학생을 짚어내는 정기적인 시간(주 1회면 충분합니다)을 정하세요. 데이터를 모으는 것만으로는 부족하고, 누군가 실제로 검토해야 의미가 있습니다.",
     } },
   { id: "staff", name: { en: "Staff & Culture", ko: "직원 및 조직 문화" }, weight: 1,
     weakestBlurb: {
@@ -69,6 +93,10 @@ export const pillars: Pillar[] = [
     nextStep: {
       en: "Name one person — even part-time — as the owner of new tools and process changes. Without a named owner, every other fix on this list tends to quietly lapse after a few weeks.",
       ko: "새로운 도구와 프로세스 변화를 담당할 사람을 한 명 지정하세요. 파트타임이라도 괜찮습니다. 담당자가 없으면 다른 개선 사항들도 몇 주 후 흐지부지되는 경우가 많습니다.",
+    },
+    nextStep2: {
+      en: "Give that person a small, visible win to start with — one fixed process, presented to the team as done — rather than a broad mandate to \"improve technology,\" which is hard to act on.",
+      ko: "담당자에게 처음부터 눈에 보이는 작은 성공 사례를 만들어주세요. 하나의 프로세스를 확실히 개선해 팀에 공유하는 방식이, '기술을 개선하라'는 막연한 임무보다 실행하기 훨씬 쉽습니다.",
     } },
 ];
 
