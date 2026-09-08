@@ -50,6 +50,20 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Once that one is off spreadsheets, add automated reminders for whatever's left manual (payment due dates are usually the highest-value one) before tackling the rest.",
       ko: "그 업무를 스프레드시트에서 벗어나게 한 뒤에는, 남은 수작업 중 자동 리마인더가 필요한 부분(대개 결제일 안내가 가장 효과가 큽니다)을 다음으로 추가하세요.",
+    },
+    nextStepByQuestion: {
+      q5: {
+        en: "Move attendance off paper into a single spreadsheet everyone updates in real time — even without new software, that alone stops the sign-in sheet from being a bottleneck when you need the data.",
+        ko: "출결을 종이에서 벗어나, 모두가 실시간으로 업데이트하는 하나의 스프레드시트로 옮기세요. 새 소프트웨어 없이도 그것만으로 필요할 때 데이터를 찾지 못하는 병목을 없앨 수 있습니다.",
+      },
+      q6: {
+        en: "Put makeup-class booking into one shared calendar instead of phone-and-rebook — the goal isn't automation yet, just one place everyone checks before promising a slot.",
+        ko: "보강 수업 예약을 전화로 일일이 잡는 대신 하나의 공유 캘린더로 옮기세요. 아직 자동화가 목표가 아니라, 시간을 약속하기 전에 모두가 확인할 수 있는 한 곳을 만드는 것이 먼저입니다.",
+      },
+      q7: {
+        en: "Move tuition tracking off paper or cash into a single spreadsheet with due dates visible to whoever handles collections — that's the step that makes automated reminders possible later.",
+        ko: "수강료 관리를 종이나 현금 기반에서 벗어나, 담당자가 납부일을 한눈에 볼 수 있는 하나의 스프레드시트로 옮기세요. 이후 자동 리마인더를 도입할 수 있게 해주는 첫걸음입니다.",
+      },
     } },
   { id: "marketing", name: { en: "Marketing & Enrollment", ko: "마케팅 및 신입생 모집" }, weight: 1,
     weakestBlurb: {
