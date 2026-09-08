@@ -123,6 +123,7 @@ export async function POST(req: NextRequest) {
   if (resendKey) {
     const notifyEmail = process.env.NOTIFY_EMAIL;
     try {
+      const weakestPillarSafe = escapeHtml(weakestPillar);
       const copy = isKo
         ? {
             subject: `학원 AI 준비도 리포트 — ${score}/84 (${band})`,
@@ -133,8 +134,7 @@ export async function POST(req: NextRequest) {
             ctaSchools: "Chekki Schools 살펴보기",
             ctaPartnership: "파트너십 알아보기",
             ctaCheckChekki: "Chekki 살펴보기",
-            ctaBook: "15분 상담 예약하기",
-            ctaAudit: "심층 진단 요청하기",
+            ctaBook: `${weakestPillarSafe} 상담 예약하기`,
           }
         : {
             subject: `Your Hagwon AI Readiness report — ${score}/84 (${band})`,
@@ -145,8 +145,7 @@ export async function POST(req: NextRequest) {
             ctaSchools: "See how Chekki Schools works",
             ctaPartnership: "Explore a partnership",
             ctaCheckChekki: "Check out Chekki",
-            ctaBook: "Book a 15-minute call",
-            ctaAudit: "Request a deeper audit",
+            ctaBook: `Discuss your ${weakestPillarSafe} gap`,
           };
 
       // Two shipped products map to two pillars: Chekki Schools (school-run
@@ -159,12 +158,12 @@ export async function POST(req: NextRequest) {
       const isHomeworkFit = weakestPillarId === "teaching";
       const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
       const replyTarget = notifyEmail || fromAddress.replace(/^.*<(.+)>$/, "$1");
-      const mailtoAudit = `mailto:${replyTarget}?subject=${encodeURIComponent(
-        `${copy.ctaAudit} — ${hagwon || name || email}`
+      const mailtoBook = `mailto:${replyTarget}?subject=${encodeURIComponent(
+        `${copy.ctaBook} — ${hagwon || name || email}`
       )}&body=${encodeURIComponent(
         isKo
-          ? `안녕하세요, AI 준비도 진단 결과(${score}/84)를 확인했습니다. 개선점을 자세히 짚어보는 심층 진단을 요청하고 싶습니다.`
-          : `Hi, following my AI Readiness result (${score}/84), I'd like to set up a deeper audit to identify areas of improvement.`
+          ? `안녕하세요, AI 준비도 진단 결과(${score}/84)를 확인했습니다. 가장 취약한 영역과 다음 단계에 대해 상담하고 싶습니다.`
+          : `Hi, following my AI Readiness result (${score}/84), I'd like to set up a time to discuss my weakest pillar and next steps.`
       )}`;
 
       const productHref = isSchoolsFit ? "https://chekkiai.com/schools" : "https://chekkiai.com";
@@ -173,7 +172,7 @@ export async function POST(req: NextRequest) {
       const bookBtnHtml = bookingUrl
         ? `<a href="${escapeHtml(bookingUrl)}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
         : notifyEmail
-        ? `<a href="${mailtoAudit}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaAudit}</a>`
+        ? `<a href="${mailtoBook}" style="display: inline-block; border: 1px solid #f97316; color: #f97316; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaBook}</a>`
         : "";
       const ctaHtml = productBtnHtml + bookBtnHtml;
 
