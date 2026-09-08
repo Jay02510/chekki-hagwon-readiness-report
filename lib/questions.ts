@@ -4,6 +4,11 @@ export type Option = { label: "A" | "B" | "C" | "D"; text: Localized; points: nu
 export type Question = { id: string; pillarId: string; prompt: Localized; options: Option[] };
 export type Pillar = {
   id: string; name: Localized; weight: number; weakestBlurb: Localized; nextStep: Localized; nextStep2: Localized;
+  // Short capability mention used only in the closing CTA once the weakest
+  // pillar is known — deliberately Chekki-specific (unlike weakestBlurb/
+  // nextStep/nextStep2, which stay neutral) since the closing ask is the one
+  // place in the report where naming a product feature is the point.
+  chekkiHook: Localized;
 };
 
 export const pillars: Pillar[] = [
@@ -19,7 +24,8 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Set a standing rule for how fast a parent question gets answered (same day is a reasonable bar) — a template only helps if there's also a clear expectation for turnaround.",
       ko: "학부모님 질문에 얼마나 빨리 답할지 기준을 정해두세요(당일 답변이 적당한 기준입니다). 양식이 있어도 답변 속도에 대한 명확한 기준이 없으면 효과가 반감됩니다.",
-    } },
+    },
+    chekkiHook: { en: "automated parent reporting", ko: "자동 학부모 리포트" } },
   { id: "safety", name: { en: "Safety & Peace of Mind", ko: "안전 및 학부모 안심" }, weight: 1.5,
     weakestBlurb: {
       en: "For Korean parents, this is often the single biggest driver of trust and retention — worth fixing even before academic-facing pillars.",
@@ -32,7 +38,8 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Add arrival/departure notice as a second layer once the no-show rule is working — parents shouldn't have to wonder on a normal day either, not just when something goes wrong.",
       ko: "결석 대응 규칙이 자리 잡으면, 등하원 알림도 다음 단계로 추가해보세요. 문제가 생겼을 때뿐 아니라 평범한 날에도 학부모님이 불안해하지 않도록 하는 것이 중요합니다.",
-    } },
+    },
+    chekkiHook: { en: "real-time absence and arrival alerts", ko: "실시간 등하원 및 결석 알림" } },
   { id: "operations", name: { en: "Operations & Admin", ko: "운영 및 행정 업무" }, weight: 1,
     weakestBlurb: {
       en: "Manual re-entry across attendance, billing, and reports is invisible until you add up the hours.",
@@ -45,7 +52,8 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Once that one is off spreadsheets, add automated reminders for whatever's left manual (payment due dates are usually the highest-value one) before tackling the rest.",
       ko: "그 업무를 스프레드시트에서 벗어나게 한 뒤에는, 남은 수작업 중 자동 리마인더가 필요한 부분(대개 결제일 안내가 가장 효과가 큽니다)을 다음으로 추가하세요.",
-    } },
+    },
+    chekkiHook: { en: "connected attendance, billing, and scheduling", ko: "출결·청구·스케줄 연동" } },
   { id: "marketing", name: { en: "Marketing & Enrollment", ko: "마케팅 및 신입생 모집" }, weight: 1,
     weakestBlurb: {
       en: "If growth depends on word of mouth alone, it's capped by how fast word travels, not by how good the hagwon actually is.",
@@ -58,7 +66,8 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Once follow-up is consistent, add one more discovery channel beyond word of mouth (an active Instagram or Naver Blog is the lowest-effort next step) so growth isn't capped by referral speed alone.",
       ko: "후속 연락이 자리 잡으면, 입소문 외에 신규 채널을 하나 더 추가해보세요(인스타그램이나 네이버 블로그 운영이 가장 시작하기 쉽습니다). 성장이 입소문 속도에만 갇히지 않도록 하는 것이 목표입니다.",
-    } },
+    },
+    chekkiHook: { en: "automated inquiry follow-up", ko: "자동 상담 후속 연락" } },
   { id: "teaching", name: { en: "Teaching & Curriculum Personalization", ko: "수업 및 맞춤형 커리큘럼" }, weight: 1,
     weakestBlurb: {
       en: "One-size-fits-all material is often why strong students get bored and struggling students fall further behind in the same room.",
@@ -71,7 +80,8 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Pick one measurable benchmark (a reading level, an internal test score) and track it consistently per student — without a number to move, \"personalization\" stays a feeling instead of a result.",
       ko: "측정 가능한 기준(리딩 레벨, 내부 테스트 점수 등) 하나를 정해 학생별로 꾸준히 추적하세요. 움직일 수치가 없으면 '맞춤화'는 결과가 아니라 막연한 느낌에 그치게 됩니다.",
-    } },
+    },
+    chekkiHook: { en: "AI-personalized curriculum tracking", ko: "AI 기반 맞춤 커리큘럼 추적" } },
   { id: "data", name: { en: "Data & Records", ko: "데이터 및 기록 관리" }, weight: 1,
     weakestBlurb: {
       en: "If you can't quickly answer \"which students need attention right now,\" you're finding out about problems later than you could be.",
@@ -84,7 +94,8 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Once the data is in one place, set a recurring time (weekly is enough) to actually look at it and flag who needs attention — collecting data only pays off if someone reviews it.",
       ko: "데이터가 한곳에 모이면, 실제로 살펴보고 관심이 필요한 학생을 짚어내는 정기적인 시간(주 1회면 충분합니다)을 정하세요. 데이터를 모으는 것만으로는 부족하고, 누군가 실제로 검토해야 의미가 있습니다.",
-    } },
+    },
+    chekkiHook: { en: "one connected view of student data", ko: "하나로 연결된 학생 데이터" } },
   { id: "staff", name: { en: "Staff & Culture", ko: "직원 및 조직 문화" }, weight: 1,
     weakestBlurb: {
       en: "Tools don't stick without someone owning adoption — often the real blocker even when other pillars look fine on paper.",
@@ -97,7 +108,8 @@ export const pillars: Pillar[] = [
     nextStep2: {
       en: "Give that person a small, visible win to start with — one fixed process, presented to the team as done — rather than a broad mandate to \"improve technology,\" which is hard to act on.",
       ko: "담당자에게 처음부터 눈에 보이는 작은 성공 사례를 만들어주세요. 하나의 프로세스를 확실히 개선해 팀에 공유하는 방식이, '기술을 개선하라'는 막연한 임무보다 실행하기 훨씬 쉽습니다.",
-    } },
+    },
+    chekkiHook: { en: "guided rollout support", ko: "단계별 도입 지원" } },
 ];
 
 function opts(a: Localized, b: Localized, c: Localized, d: Localized): Option[] {
@@ -191,7 +203,7 @@ export const questions: Question[] = [
       { en: "Materials are actively tailored per student using performance data", ko: "학생별 성취도 데이터를 바탕으로 교재를 적극적으로 맞춤화합니다" },
     ) },
   { id: "q11", pillarId: "teaching",
-    prompt: { en: "How do you track and communicate each student's English proficiency progress (reading level, TOEFL Junior, internal benchmark, etc.)?", ko: "학생별 영어 실력(리딩 레벨, 토플 주니어, 내부 기준 등) 향상 과정을 어떻게 추적하고 학부모님께 전달하시나요?" },
+    prompt: { en: "If a parent asked exactly how much their child's English level has improved this year, could you show them a number?", ko: "학부모님이 올해 자녀의 영어 실력이 정확히 얼마나 향상되었는지 물어보신다면, 구체적인 수치로 보여드릴 수 있나요?" },
     options: opts(
       { en: "We don't track this formally", ko: "따로 공식적으로 추적하지 않습니다" },
       { en: "Teachers keep informal notes", ko: "선생님이 비공식적으로 메모해 둡니다" },
@@ -207,7 +219,7 @@ export const questions: Question[] = [
       { en: "AI tools are a standard, expected part of the workflow", ko: "AI 도구가 업무의 표준적인 일부로 자리 잡았습니다" },
     ) },
   { id: "q13", pillarId: "data",
-    prompt: { en: "Where does most student data live (scores, attendance, notes)?", ko: "학생 데이터(성적, 출결, 특이사항 등)는 주로 어디에 보관되나요?" },
+    prompt: { en: "If you needed a student's scores, attendance, and notes all at once, where would you have to look?", ko: "한 학생의 성적, 출결, 특이사항을 한 번에 확인해야 한다면, 어디를 봐야 하나요?" },
     options: opts(
       { en: "Paper files", ko: "종이 서류로 보관합니다" },
       { en: "Scattered across each teacher's own spreadsheet or notebook", ko: "선생님마다 각자의 스프레드시트나 노트에 흩어져 있습니다" },

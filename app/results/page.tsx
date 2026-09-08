@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { scoreAssessment, Answers } from "@/lib/scoring";
+import { questions } from "@/lib/questions";
 import { useLang, pick } from "@/lib/i18n";
 import { strings } from "@/lib/strings";
 
@@ -12,6 +13,7 @@ export default function Results() {
   const { lang } = useLang();
   const t = strings[lang];
   const [result, setResult] = useState<ReturnType<typeof scoreAssessment> | null>(null);
+  const [answers, setAnswers] = useState<Answers>({});
   const [submitted, setSubmitted] = useState(false);
   const [name, setName] = useState("");
   const [hagwon, setHagwon] = useState("");
@@ -25,11 +27,29 @@ export default function Results() {
     const raw = localStorage.getItem("hagwon-readiness-answers");
     if (!raw) return;
     try {
-      setResult(scoreAssessment(JSON.parse(raw) as Answers));
+      const parsed = JSON.parse(raw) as Answers;
+      setAnswers(parsed);
+      setResult(scoreAssessment(parsed));
     } catch {
       // malformed/stale data — fall back to the "no results" state
     }
   }, []);
+
+  // The lowest-scoring answered question within the weakest pillar — used to
+  // open that pillar's first opportunity with the director's actual answer
+  // instead of a generic, score-band-only recommendation.
+  function weakestAnswerText(pillarId: string): string | null {
+    let worstText: string | null = null;
+    let worstPoints = Infinity;
+    for (const q of questions.filter((q) => q.pillarId === pillarId)) {
+      const opt = q.options.find((o) => o.label === answers[q.id]);
+      if (opt && opt.points < worstPoints) {
+        worstPoints = opt.points;
+        worstText = pick(opt.text, lang);
+      }
+    }
+    return worstText;
+  }
 
   async function submit() {
     if (!result) return;
@@ -50,9 +70,10 @@ export default function Results() {
           bandIntro: pick(result.band.intro, lang),
           weakestPillar: pick(result.weakestPillar.name, lang),
           weakestBlurb: pick(result.weakestPillar.weakestBlurb, lang),
-          weakestNextStep: pick(result.weakestPillar.nextStep, lang),
+          weakestNextStep: personalizedNextStep,
           weakestNextStep2: pick(result.weakestPillar.nextStep2, lang),
-          closingQuestion: t.closingQuestion,
+          closingQuestion: closingText,
+          disclaimer: t.disclaimer,
           // The weakest pillar's blurb/next-step are sent separately above and
           // get their own section in the email — omit them here so they're
           // not shown twice in the per-pillar table.
@@ -94,6 +115,11 @@ export default function Results() {
     );
   }
 
+  const weakestAnswer = weakestAnswerText(result.weakestPillar.id);
+  const weakestNextStepText = pick(result.weakestPillar.nextStep, lang);
+  const personalizedNextStep = weakestAnswer ? t.youMentioned(weakestAnswer) + weakestNextStepText : weakestNextStepText;
+  const closingText = t.closingQuestion(pick(result.weakestPillar.chekkiHook, lang), pick(result.weakestPillar.name, lang));
+
   return (
     <div>
       <Link
@@ -108,13 +134,14 @@ export default function Results() {
 
       <h1 className="font-display font-black text-3xl text-text-main mb-2">{pick(result.band.name, lang)}</h1>
       <p className="font-body text-text-main/90 leading-relaxed mb-4">{pick(result.band.intro, lang)}</p>
-      <p className="font-body text-text-main/80 leading-relaxed mb-8">{pick(result.band.blurb, lang)}</p>
+      <p className="font-body text-text-main/80 leading-relaxed mb-4">{pick(result.band.blurb, lang)}</p>
+      <p className="font-body text-xs text-text-muted leading-relaxed mb-8">{t.disclaimer}</p>
 
       <div className="border-t border-brand-border pt-6 mb-10">
         <p className="font-body text-sm text-brand-orange mb-2">{t.weakestPillarLabel}</p>
         <p className="font-display font-black text-xl text-text-main mb-2">{pick(result.weakestPillar.name, lang)}</p>
         <p className="font-body text-text-main/80 leading-relaxed mb-3">{pick(result.weakestPillar.weakestBlurb, lang)}</p>
-        <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed">{pick(result.weakestPillar.nextStep, lang)}</p>
+        <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed">{personalizedNextStep}</p>
         <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-2">{pick(result.weakestPillar.nextStep2, lang)}</p>
       </div>
 
@@ -169,7 +196,7 @@ export default function Results() {
       ) : (
         <div>
           <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
-          <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{t.closingQuestion}</p>
+          <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{closingText}</p>
           {process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
             <div className="flex flex-wrap gap-3">
               <a

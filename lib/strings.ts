@@ -13,7 +13,10 @@ export const strings = {
     weakestPillarLabel: "Your weakest pillar",
     allPillars: "All seven pillars",
     leadIn: "Want the full breakdown in your inbox — with the steps to raise your score? Leave your info and I'll send it over and follow up directly.",
-    closingQuestion: "Do you want to see how Chekki's existing products can help, or would you rather set up a deeper audit to identify areas of improvement? Just reply and let me know.",
+    disclaimer: "This is a quick gut-check based on patterns we see across hagwons, not a formal audit.",
+    youMentioned: (answerText: string) => `You mentioned: "${answerText}" — `,
+    closingQuestion: (hook: string, pillarName: string) =>
+      `Chekki's ${hook} would close most of this ${pillarName} gap early — want to see how that works, or would a deeper audit make more sense first?`,
     ctaProducts: "Show me Chekki's products",
     ctaAudit: "Request a deeper audit",
     ctaProductsBody: (score: number) => `Hi, following my AI Readiness result (${score}/72), I'd like to see how Chekki's existing products can help.`,
@@ -46,7 +49,10 @@ export const strings = {
     weakestPillarLabel: "가장 취약한 영역",
     allPillars: "7개 영역 전체 결과",
     leadIn: "전체 리포트와 함께, 점수를 올릴 수 있는 구체적인 방법도 함께 안내해 드릴까요? 연락처를 남겨주시면 리포트를 보내드리고 직접 연락드리겠습니다.",
-    closingQuestion: "Chekki의 기존 제품이 어떻게 도움이 될 수 있는지 살펴보고 싶으신가요, 아니면 개선점을 자세히 짚어보는 심층 진단을 받아보고 싶으신가요? 이 메일에 답장 주시면 안내해 드리겠습니다.",
+    disclaimer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
+    youMentioned: (answerText: string) => `이렇게 답변해 주셨죠: "${answerText}" — `,
+    closingQuestion: (hook: string, pillarName: string) =>
+      `Chekki의 ${hook} 기능을 활용하면 ${pillarName} 영역의 격차 대부분을 초기에 줄일 수 있습니다 — 어떻게 작동하는지 살펴보시겠어요, 아니면 심층 진단이 먼저 필요하실까요?`,
     ctaProducts: "Chekki 제품 살펴보기",
     ctaAudit: "심층 진단 요청하기",
     ctaProductsBody: (score: number) => `안녕하세요, AI 준비도 진단 결과(${score}/72)를 확인했습니다. Chekki의 기존 제품이 어떻게 도움이 될 수 있는지 안내받고 싶습니다.`,

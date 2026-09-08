@@ -89,12 +89,12 @@ export async function POST(req: NextRequest) {
   const {
     name, hagwon, contact, email, feedback, score, band, bandIntro,
     weakestPillar, weakestBlurb, weakestNextStep, weakestNextStep2,
-    closingQuestion, pillarResults, lang,
+    closingQuestion, disclaimer, pillarResults, lang,
   } = body as {
     name: string; hagwon: string; contact: string; email: string; feedback?: string;
     score: number; band: string; bandIntro: string;
     weakestPillar: string; weakestBlurb: string; weakestNextStep: string; weakestNextStep2: string;
-    closingQuestion: string; pillarResults: PillarResult[];
+    closingQuestion: string; disclaimer: string; pillarResults: PillarResult[];
     lang?: "en" | "ko";
   };
   const isKo = lang === "ko";
@@ -132,7 +132,6 @@ export async function POST(req: NextRequest) {
             allPillarsLabel: "영역별 전체 결과",
             ctaProducts: "Chekki 제품 살펴보기",
             ctaAudit: "심층 진단 요청하기",
-            footer: "학원들에게서 반복적으로 나타나는 패턴을 바탕으로 한 간단한 진단이며, 정식 컨설팅 리포트는 아닙니다.",
           }
         : {
             subject: `Your Hagwon AI Readiness report — ${score}/72 (${band})`,
@@ -142,7 +141,6 @@ export async function POST(req: NextRequest) {
             allPillarsLabel: "Full breakdown by pillar",
             ctaProducts: "Show me Chekki's products",
             ctaAudit: "Request a deeper audit",
-            footer: "This is a quick gut-check based on patterns we see across hagwons, not a formal audit.",
           };
 
       // Reply-ready mailto links so the closing question has an actual way
@@ -175,8 +173,11 @@ export async function POST(req: NextRequest) {
             <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0;">${copy.eyebrow}</p>
             <p style="font-size: 40px; font-weight: 900; color: #ffffff; margin: 0;">${score}<span style="font-size: 16px; font-weight: 400; color: #a1a1aa;">${copy.outOf}</span></p>
             <h1 style="font-size: 22px; color: #ffffff; margin: 12px 0 8px 0;">${escapeHtml(band)}</h1>
-            <p style="font-size: 14px; color: #d4d4d8; line-height: 1.6; margin: 0 0 24px 0;">
+            <p style="font-size: 14px; color: #d4d4d8; line-height: 1.6; margin: 0 0 10px 0;">
               ${escapeHtml(bandIntro)}
+            </p>
+            <p style="font-size: 12px; color: #71717a; line-height: 1.5; margin: 0 0 24px 0;">
+              ${escapeHtml(disclaimer)}
             </p>
             <p style="font-size: 13px; color: #f97316; margin: 0 0 8px 0; font-weight: 600;">${copy.weakestLabel}</p>
             <h2 style="font-size: 18px; color: #ffffff; margin: 0 0 8px 0;">${escapeHtml(weakestPillar)}</h2>
@@ -200,9 +201,6 @@ export async function POST(req: NextRequest) {
                 </td>
               </tr>
             </table>
-            <p style="font-size: 13px; color: #71717a; margin-top: 20px;">
-              ${copy.footer}
-            </p>
           </div>
         `,
       });
