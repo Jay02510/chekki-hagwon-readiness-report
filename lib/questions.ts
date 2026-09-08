@@ -82,6 +82,10 @@ export const pillars: Pillar[] = [
         en: "Send home a short answer key or self-check guide with each assignment, so a student can verify their own work without needing a parent who reads English — a low-effort first step before automating it.",
         ko: "숙제마다 간단한 정답지나 자가 점검 가이드를 함께 보내, 영어를 읽는 학부모님이 없어도 학생 스스로 확인할 수 있게 해보세요. 자동화 도구를 도입하기 전, 낮은 비용으로 시작할 수 있는 첫걸음입니다.",
       },
+      q12: {
+        en: "Pick one repetitive task — grading short-answer homework or drafting first-pass feedback comments — and let one teacher pilot an AI tool on just that task for two weeks. A scoped pilot beats a team-wide mandate nobody actually tries.",
+        ko: "반복적인 업무 하나(단답형 숙제 채점이나 피드백 초안 작성 등)를 골라, 선생님 한 분이 2주간 AI 도구로 시범 운영해보게 하세요. 팀 전체에 적용을 지시하는 것보다, 범위를 좁힌 시범 운영이 실제로 실행될 가능성이 훨씬 높습니다.",
+      },
     } },
   { id: "data", name: { en: "Data & Records", ko: "데이터 및 기록 관리" }, weight: 1,
     weakestBlurb: {
