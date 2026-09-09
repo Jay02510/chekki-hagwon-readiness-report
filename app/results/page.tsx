@@ -9,6 +9,12 @@ import { strings } from "@/lib/strings";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
 export default function Results() {
   const { lang } = useLang();
   const t = strings[lang];
@@ -115,6 +121,10 @@ export default function Results() {
       const data = await res.json();
       if (data.id) setReportId(data.id);
       setSubmitted(true);
+      window.gtag?.("event", "generate_lead", {
+        score: result.weightedTotal,
+        band: pick(result.band.name, lang),
+      });
     } finally {
       setSubmitting(false);
     }
