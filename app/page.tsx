@@ -1,12 +1,18 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
 import { strings } from "@/lib/strings";
+import { captureUtm } from "@/lib/utm";
 
 export default function Landing() {
   const { lang } = useLang();
   const t = strings[lang];
+
+  useEffect(() => {
+    captureUtm();
+  }, []);
 
   return (
     <div>

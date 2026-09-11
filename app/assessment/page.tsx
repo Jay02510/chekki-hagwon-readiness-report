@@ -8,6 +8,7 @@ import type { Answers } from "@/lib/scoring";
 import { useLang, pick } from "@/lib/i18n";
 import { strings } from "@/lib/strings";
 import ProgressBar from "@/components/ProgressBar";
+import { captureUtm } from "@/lib/utm";
 
 const PROGRESS_KEY = "hagwon-readiness-progress";
 
@@ -19,8 +20,12 @@ export default function Assessment() {
 
   // Restore mid-quiz progress on mount so a refresh doesn't lose it.
   useEffect(() => {
+    captureUtm();
     const raw = localStorage.getItem(PROGRESS_KEY);
-    if (!raw) return;
+    if (!raw) {
+      window.gtag?.("event", "quiz_start");
+      return;
+    }
     try {
       const saved = JSON.parse(raw) as { step: number; answers: Answers };
       if (saved.step >= 0 && saved.step < questions.length) {

@@ -92,13 +92,14 @@ export async function POST(req: NextRequest) {
   const {
     name, hagwon, contact, email, feedback, score, band, bandIntro,
     weakestPillar, weakestPillarId, weakestBlurb, weakestNextStep, weakestNextStep2,
-    closingQuestion, disclaimer, pillarResults, lang,
+    closingQuestion, disclaimer, pillarResults, lang, utm,
   } = body as {
     name: string; hagwon: string; contact: string; email: string; feedback?: string;
     score: number; band: string; bandIntro: string;
     weakestPillar: string; weakestPillarId: string; weakestBlurb: string; weakestNextStep: string; weakestNextStep2: string;
     closingQuestion: string; disclaimer: string; pillarResults: PillarResult[];
     lang?: "en" | "ko";
+    utm?: { source?: string; medium?: string; campaign?: string };
   };
   const isKo = lang === "ko";
 
@@ -129,6 +130,9 @@ export async function POST(req: NextRequest) {
       disclaimer,
       pillarResults,
       lang: lang || "en",
+      utmSource: utm?.source || null,
+      utmMedium: utm?.medium || null,
+      utmCampaign: utm?.campaign || null,
       createdAt: new Date().toISOString(),
     });
     reportId = docRef.id;

@@ -6,6 +6,7 @@ import { scoreAssessment, Answers } from "@/lib/scoring";
 import { questions, Pillar } from "@/lib/questions";
 import { useLang, pick } from "@/lib/i18n";
 import { strings } from "@/lib/strings";
+import { getUtm } from "@/lib/utm";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -85,6 +86,7 @@ export default function Results() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name, hagwon, contact, email, feedback, lang,
+          utm: getUtm(),
           score: result.weightedTotal,
           band: pick(result.band.name, lang),
           bandIntro: pick(result.band.intro, lang),
