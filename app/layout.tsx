@@ -1,7 +1,5 @@
 import Script from "next/script";
 import { Bricolage_Grotesque, Onest } from "next/font/google";
-import { LangProvider } from "@/lib/i18n";
-import LangToggle from "@/components/LangToggle";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -37,24 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Script>
         </>
       )}
-      <body className="font-body min-h-screen bg-brand-dark text-text-main">
-        <main className="max-w-xl mx-auto px-6 py-16">
-          <LangProvider>
-            <LangToggle />
-            <div className="bg-brand-card border border-brand-border rounded-3xl p-6 md:p-8">
-              {children}
-            </div>
-            <footer className="text-center mt-10">
-              <a
-                href="https://chekkiai.com"
-                className="font-display font-black text-sm text-text-muted hover:text-text-main transition-colors"
-              >
-                Chekki<span className="text-brand-orange">ai</span>
-              </a>
-            </footer>
-          </LangProvider>
-        </main>
-      </body>
+      <body className="font-body min-h-screen bg-brand-dark text-text-main">{children}</body>
     </html>
   );
 }
