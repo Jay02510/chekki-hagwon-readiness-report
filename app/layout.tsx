@@ -23,7 +23,17 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${bricolage.variable} ${onest.variable}`}>
+    // suppressHydrationWarning: the inline script below sets data-theme before
+    // React hydrates, so the server and client <html> attributes differ.
+    <html lang="en" className={`${bricolage.variable} ${onest.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Applies a saved theme choice before first paint so there's no flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("hagwon-readiness-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`,
+          }}
+        />
+      </head>
       {GA_MEASUREMENT_ID && (
         <>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} strategy="afterInteractive" />

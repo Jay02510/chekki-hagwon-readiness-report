@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Dark is the default. Light applies when the OS prefers it, unless the
+   visitor picked a theme with ThemeToggle (data-theme on <html>). */
 :root {
   --color-brand-dark: #050505;
   --color-brand-card: #0f1014;
@@ -12,14 +14,21 @@
 }
 
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --color-brand-dark: #f8fafc;
     --color-brand-card: #ffffff;
-    --color-brand-orange: #f97316;
     --color-brand-border: #e4e4e7;
     --color-text-main: #18181b;
     --color-text-muted: #52525b;
   }
+}
+
+:root[data-theme="light"] {
+  --color-brand-dark: #f8fafc;
+  --color-brand-card: #ffffff;
+  --color-brand-border: #e4e4e7;
+  --color-text-main: #18181b;
+  --color-text-muted: #52525b;
 }
 
 body {

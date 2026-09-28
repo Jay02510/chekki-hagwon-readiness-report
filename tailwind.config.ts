@@ -1,6 +1,15 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  // `dark:` follows the same rule as globals.css: OS preference, overridden
+  // by an explicit data-theme from ThemeToggle.
+  darkMode: [
+    "variant",
+    [
+      "@media (prefers-color-scheme: dark) { &:not(:where([data-theme=light], [data-theme=light] *)) }",
+      "&:where([data-theme=dark], [data-theme=dark] *)",
+    ],
+  ],
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
   theme: {
     extend: {
