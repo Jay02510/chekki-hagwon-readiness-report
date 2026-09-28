@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { questions } from "@/lib/questions";
+import { questions, pillars } from "@/lib/questions";
 import type { Answers } from "@/lib/scoring";
 import { useLang, pick } from "@/lib/i18n";
 import { strings } from "@/lib/strings";
@@ -38,6 +38,7 @@ export default function Assessment() {
   }, []);
 
   const q = questions[step];
+  const pillarIndex = pillars.findIndex((p) => p.id === q.pillarId);
 
   function choose(label: "A" | "B" | "C" | "D") {
     const next = { ...answers, [q.id]: label };
@@ -77,6 +78,11 @@ export default function Assessment() {
         </Link>
       )}
       <ProgressBar current={step + 1} total={questions.length} />
+      {/* Names the area each question belongs to, so questions outside the
+          safety/communication framing on the landing page don't feel off-topic. */}
+      <p className="font-body text-sm text-brand-orange mb-3">
+        {strings[lang].pillarOf(pillarIndex + 1, pillars.length, pick(pillars[pillarIndex].name, lang))}
+      </p>
       <h2 className="font-display font-black text-2xl text-text-main mb-8 leading-snug">{pick(q.prompt, lang)}</h2>
       <div className="space-y-3">
         {q.options.map((opt) => (

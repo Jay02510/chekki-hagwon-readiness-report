@@ -96,6 +96,8 @@ export default function Results() {
           weakestNextStep: personalizedNextStep,
           weakestNextStep2: pick(result.weakestPillar.nextStep2, lang),
           closingQuestion: closingText,
+          bandBlurb: pick(result.band.blurb, lang),
+          safetyComm,
           disclaimer: t.disclaimer,
           // The weakest pillar gets its own section above with the full
           // score and copy — drop it from this table entirely instead of
@@ -147,6 +149,11 @@ export default function Results() {
     );
   }
 
+  // The landing page leads with communication & safety, so the report always
+  // answers that first — as one part of the overall score, not the whole of it.
+  const safetyComm = result.pillarResults
+    .filter((p) => p.pillar.id === "parentComm" || p.pillar.id === "safety")
+    .reduce((acc, p) => ({ raw: acc.raw + p.raw, maxRaw: acc.maxRaw + p.maxRaw }), { raw: 0, maxRaw: 0 });
   const personalizedNextStep = personalizedStepFor(result.weakestPillar, pick(result.weakestPillar.nextStep, lang));
   // Two shipped products map to two pillars: Chekki Schools (a school-run
   // tool) fits parentComm, the parent-facing homework helper fits teaching
@@ -177,6 +184,14 @@ export default function Results() {
       <p className="font-body text-text-main/90 leading-relaxed mb-4">{pick(result.band.intro, lang)}</p>
       <p className="font-body text-text-main/80 leading-relaxed mb-4">{pick(result.band.blurb, lang)}</p>
       <p className="font-body text-xs text-text-muted leading-relaxed mb-8">{t.disclaimer}</p>
+
+      <div className="border-t border-brand-border pt-6 mb-10">
+        <div className="flex justify-between items-baseline mb-2">
+          <p className="font-display font-black text-xl text-text-main">{t.safetyCommLabel}</p>
+          <p className="font-body text-text-muted">{safetyComm.raw}/{safetyComm.maxRaw}</p>
+        </div>
+        <p className="font-body text-sm text-text-main/80 leading-relaxed">{t.safetyCommNote}</p>
+      </div>
 
       <div className="border-t border-brand-border pt-6 mb-10">
         <p className="font-body text-sm text-brand-orange mb-2">{t.weakestPillarLabel}</p>

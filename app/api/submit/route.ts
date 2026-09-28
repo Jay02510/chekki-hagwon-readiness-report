@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
+import { strings } from "@/lib/strings";
 
 // Set FIREBASE_SERVICE_ACCOUNT to the same service account JSON chekki-ai
 // uses, plus RESEND_API_KEY and NOTIFY_EMAIL, to get submissions written to
@@ -92,10 +93,11 @@ export async function POST(req: NextRequest) {
   const {
     name, hagwon, contact, email, feedback, score, band, bandIntro,
     weakestPillar, weakestPillarId, weakestBlurb, weakestNextStep, weakestNextStep2,
-    closingQuestion, disclaimer, pillarResults, lang, utm,
+    closingQuestion, disclaimer, pillarResults, lang, utm, bandBlurb, safetyComm,
   } = body as {
     name: string; hagwon: string; contact: string; email: string; feedback?: string;
-    score: number; band: string; bandIntro: string;
+    score: number; band: string; bandIntro: string; bandBlurb?: string;
+    safetyComm?: { raw: number; maxRaw: number };
     weakestPillar: string; weakestPillarId: string; weakestBlurb: string; weakestNextStep: string; weakestNextStep2: string;
     closingQuestion: string; disclaimer: string; pillarResults: PillarResult[];
     lang?: "en" | "ko";
@@ -121,6 +123,8 @@ export async function POST(req: NextRequest) {
       score,
       band,
       bandIntro,
+      bandBlurb: bandBlurb || null,
+      safetyComm: safetyComm || null,
       weakestPillar,
       weakestPillarId,
       weakestBlurb,
@@ -145,31 +149,31 @@ export async function POST(req: NextRequest) {
     const notifyEmail = process.env.NOTIFY_EMAIL;
     try {
       const weakestPillarSafe = escapeHtml(weakestPillar);
-      const copy = isKo
-        ? {
-            subject: `학원 AI 준비도 리포트 — ${score}/84 (${band})`,
-            eyebrow: "AI 준비도 진단 결과",
-            outOf: " / 84",
-            weakestLabel: "가장 먼저 살펴볼 영역",
-            allPillarsLabel: "영역별 전체 결과",
-            strongNote: "탄탄합니다 — 지금은 다른 영역에 집중하셔도 좋습니다.",
-            ctaTry: "Chekki 사용해보기",
-            ctaTryCaption: "Chekki가 어떻게 도움이 되는지 확인해보세요",
-            ctaBook: "미팅 예약하기",
-            ctaBookCaption: `${weakestPillarSafe}에 대해 더 자세히 이야기해보아요`,
-          }
-        : {
-            subject: `Your Hagwon AI Readiness report — ${score}/84 (${band})`,
-            eyebrow: "Your Hagwon AI Readiness result",
-            outOf: " / 84",
-            weakestLabel: "Where to look first",
-            allPillarsLabel: "Full breakdown by pillar",
-            strongNote: "Solid — this one's already working, so focus your energy elsewhere first.",
-            ctaTry: "Try Chekki",
-            ctaTryCaption: "See how Chekki can help",
-            ctaBook: "Book a meeting",
-            ctaBookCaption: `Let's discuss your ${weakestPillarSafe} further`,
-          };
+      // Labels come from the same strings as the web results page so the
+      // email and the site can't drift apart again.
+      const t = strings[isKo ? "ko" : "en"];
+      const copy = {
+        subject: isKo
+          ? `학원 AI 준비도 리포트 — ${score}/84 (${band})`
+          : `Your Hagwon AI Readiness report — ${score}/84 (${band})`,
+        eyebrow: t.yourResult,
+        // Inline next to the score in the email layout, vs. its own line on the site.
+        outOf: " / 84",
+        weakestLabel: t.weakestPillarLabel,
+        allPillarsLabel: t.allPillars,
+        strongNote: t.strongNote,
+        ctaTry: t.ctaTry,
+        ctaTryCaption: t.ctaTryCaption,
+        ctaBook: t.ctaBook,
+        ctaBookCaption: t.ctaBookCaption(weakestPillarSafe),
+      };
+      const safetyCommHtml = safetyComm
+        ? `<table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 6px 0;"><tr>
+              <td style="font-size: 16px; font-weight: 700; color: #18181b;">${escapeHtml(t.safetyCommLabel)}</td>
+              <td align="right" style="font-size: 14px; color: #71717a;">${Number(safetyComm.raw)}/${Number(safetyComm.maxRaw)}</td>
+            </tr></table>
+            <p style="font-size: 13px; color: #3f3f46; line-height: 1.6; margin: 0 0 24px 0;">${escapeHtml(t.safetyCommNote)}</p>`
+        : "";
 
       // Only the teaching pillar maps to the parent-facing homework helper,
       // pitched as a partnership since the director would be introducing it
@@ -180,11 +184,7 @@ export async function POST(req: NextRequest) {
       const replyTarget = notifyEmail || fromAddress.replace(/^.*<(.+)>$/, "$1");
       const mailtoBook = `mailto:${replyTarget}?subject=${encodeURIComponent(
         `${copy.ctaBook} — ${hagwon || name || email}`
-      )}&body=${encodeURIComponent(
-        isKo
-          ? `안녕하세요, AI 준비도 진단 결과(${score}/84)를 확인했습니다. 가장 취약한 영역과 다음 단계에 대해 상담하고 싶습니다.`
-          : `Hi, following my AI Readiness result (${score}/84), I'd like to set up a time to discuss my weakest pillar and next steps.`
-      )}`;
+      )}&body=${encodeURIComponent(t.ctaBookBody(score))}`;
 
       const productHref = isHomeworkFit ? "https://chekkiai.com" : "https://chekkiai.com/schools";
       const productBtnHtml = `<div style="display: inline-block; margin-right: 24px;"><a href="${productHref}" style="display: inline-block; background-color: #f97316; color: #000000; font-size: 13px; font-weight: 600; text-decoration: none; padding: 10px 18px; border-radius: 999px;">${copy.ctaTry}</a><p style="font-size: 11px; color: #71717a; margin: 6px 0 0 0;">${copy.ctaTryCaption}</p></div>`;
@@ -220,9 +220,10 @@ export async function POST(req: NextRequest) {
             <p style="font-size: 14px; color: #3f3f46; line-height: 1.6; margin: 0 0 10px 0;">
               ${escapeHtml(bandIntro)}
             </p>
-            <p style="font-size: 12px; color: #71717a; line-height: 1.5; margin: 0 0 24px 0;">
+${bandBlurb ? `            <p style="font-size: 14px; color: #3f3f46; line-height: 1.6; margin: 0 0 10px 0;">${escapeHtml(bandBlurb)}</p>\n` : ""}            <p style="font-size: 12px; color: #71717a; line-height: 1.5; margin: 0 0 24px 0;">
               ${escapeHtml(disclaimer)}
             </p>
+            ${safetyCommHtml}
             <p style="font-size: 13px; color: #c2410c; margin: 0 0 8px 0; font-weight: 600;">${copy.weakestLabel}</p>
             <h2 style="font-size: 18px; color: #18181b; margin: 0 0 8px 0;">${escapeHtml(weakestPillar)}</h2>
             <p style="font-size: 13px; color: #3f3f46; line-height: 1.6; margin: 0 0 10px 0;">${escapeHtml(weakestBlurb)}</p>

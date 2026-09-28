@@ -8,6 +8,9 @@ type Report = {
   score: number;
   band: string;
   bandIntro: string;
+  // Missing on reports submitted before these fields were stored.
+  bandBlurb?: string | null;
+  safetyComm?: { raw: number; maxRaw: number } | null;
   disclaimer: string;
   weakestPillar: string;
   weakestPillarId: string;
@@ -58,7 +61,18 @@ export default async function ReportPermalink({ params }: { params: { id: string
 
       <h1 className="font-display font-black text-3xl text-text-main mb-2">{report.band}</h1>
       <p className="font-body text-text-main/90 leading-relaxed mb-4">{report.bandIntro}</p>
+      {report.bandBlurb && <p className="font-body text-text-main/80 leading-relaxed mb-4">{report.bandBlurb}</p>}
       <p className="font-body text-xs text-text-muted leading-relaxed mb-8">{report.disclaimer}</p>
+
+      {report.safetyComm && (
+        <div className="border-t border-brand-border pt-6 mb-10">
+          <div className="flex justify-between items-baseline mb-2">
+            <p className="font-display font-black text-xl text-text-main">{t.safetyCommLabel}</p>
+            <p className="font-body text-text-muted">{report.safetyComm.raw}/{report.safetyComm.maxRaw}</p>
+          </div>
+          <p className="font-body text-sm text-text-main/80 leading-relaxed">{t.safetyCommNote}</p>
+        </div>
+      )}
 
       <div className="border-t border-brand-border pt-6 mb-10">
         <p className="font-body text-sm text-brand-orange mb-2">{t.weakestPillarLabel}</p>
