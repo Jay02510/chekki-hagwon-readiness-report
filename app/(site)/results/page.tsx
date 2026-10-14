@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { scoreAssessment, Answers } from "@/lib/scoring";
-import { questions, Pillar } from "@/lib/questions";
-import { useLang, pick } from "@/lib/i18n";
+import { useEffect, useMemo, useState } from "react";
+import type { Answers } from "@/lib/scoring";
+import { buildReport, isCompleteAnswers } from "@/lib/report";
+import { useLang } from "@/lib/i18n";
 import { strings } from "@/lib/strings";
 import { getUtm } from "@/lib/utm";
+import Report, { BackHome, NoResults } from "@/components/Report";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,9 +19,7 @@ declare global {
 export default function Results() {
   const { lang } = useLang();
   const t = strings[lang];
-  const [result, setResult] = useState<ReturnType<typeof scoreAssessment> | null>(null);
-  const [answers, setAnswers] = useState<Answers>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [answers, setAnswers] = useState<Answers | null>(null);
   const [name, setName] = useState("");
   const [hagwon, setHagwon] = useState("");
   const [contact, setContact] = useState("");
@@ -29,51 +27,23 @@ export default function Results() {
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [reportId, setReportId] = useState<string | null>(null);
+  const [sent, setSent] = useState<{ id: string | null; emailed: boolean } | null>(null);
 
   useEffect(() => {
-    const raw = localStorage.getItem("hagwon-readiness-answers");
-    if (!raw) return;
     try {
-      const parsed = JSON.parse(raw) as Answers;
-      setAnswers(parsed);
-      setResult(scoreAssessment(parsed));
+      const parsed = JSON.parse(localStorage.getItem("hagwon-readiness-answers") ?? "null");
+      if (isCompleteAnswers(parsed)) setAnswers(parsed);
     } catch {
       // malformed/stale data — fall back to the "no results" state
     }
   }, []);
 
-  // The lowest-scoring answered question within a pillar — used to open that
-  // pillar's opportunity with the director's actual answer instead of a
-  // generic, score-band-only recommendation. Applied to every pillar, not
-  // just the weakest, so the whole report reads as specific to their answers.
-  function worstAnswer(pillarId: string): { questionId: string; text: string } | null {
-    let worst: { questionId: string; text: string } | null = null;
-    let worstPoints = Infinity;
-    for (const q of questions.filter((q) => q.pillarId === pillarId)) {
-      const opt = q.options.find((o) => o.label === answers[q.id]);
-      if (opt && opt.points < worstPoints) {
-        worstPoints = opt.points;
-        worst = { questionId: q.id, text: pick(opt.text, lang) };
-      }
-    }
-    return worst;
-  }
+  // Same builder the API uses, so what's on screen is what gets emailed.
+  const report = useMemo(() => (answers ? buildReport(answers, lang) : null), [answers, lang]);
 
-  // A pillar can span more than one underlying problem (teaching covers both
-  // in-class leveled tracks and the homework question) — pillar.nextStep only
-  // fits one of them, so swap in nextStepByQuestion when the quoted answer
-  // came from a question that needs a different recommendation.
-  function personalizedStepFor(pillar: Pillar, fallbackNextStep: string): string {
-    const worst = worstAnswer(pillar.id);
-    if (!worst) return fallbackNextStep;
-    const override = pillar.nextStepByQuestion?.[worst.questionId];
-    const stepText = override ? pick(override, lang) : fallbackNextStep;
-    return t.youMentioned(worst.text) + stepText;
-  }
-
-  async function submit() {
-    if (!result) return;
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!report) return;
     setError("");
     if (!EMAIL_RE.test(email)) {
       setError(t.emailError);
@@ -84,228 +54,82 @@ export default function Results() {
       const res = await fetch("/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name, hagwon, contact, email, feedback, lang,
-          utm: getUtm(),
-          score: result.weightedTotal,
-          band: pick(result.band.name, lang),
-          bandIntro: pick(result.band.intro, lang),
-          weakestPillar: pick(result.weakestPillar.name, lang),
-          weakestPillarId: result.weakestPillar.id,
-          weakestBlurb: pick(result.weakestPillar.weakestBlurb, lang),
-          weakestNextStep: personalizedNextStep,
-          weakestNextStep2: pick(result.weakestPillar.nextStep2, lang),
-          closingQuestion: closingText,
-          bandBlurb: pick(result.band.blurb, lang),
-          safetyComm,
-          disclaimer: t.disclaimer,
-          // The weakest pillar gets its own section above with the full
-          // score and copy — drop it from this table entirely instead of
-          // repeating its score row a second time.
-          pillarResults: result.pillarResults
-            .filter((p) => p.pillar.id !== result.weakestPillar.id)
-            .map((p) => ({
-            name: pick(p.pillar.name, lang),
-            raw: p.raw,
-            maxRaw: p.maxRaw,
-            isStrong: p.isStrong,
-            blurb: p.isStrong ? null : pick(p.pillar.weakestBlurb, lang),
-            nextStep: p.isStrong ? null : personalizedStepFor(p.pillar, pick(p.pillar.nextStep, lang)),
-          })),
-        }),
+        body: JSON.stringify({ name, hagwon, contact, email, feedback, lang, utm: getUtm(), answers }),
       });
-      if (res.status === 429) {
-        setError(t.rateLimitError);
-        return;
-      }
       if (!res.ok) {
-        setError(t.emailError);
+        setError(res.status === 429 ? t.rateLimitError : res.status === 400 ? t.emailError : t.submitError);
         return;
       }
       const data = await res.json();
-      if (data.id) setReportId(data.id);
-      setSubmitted(true);
-      window.gtag?.("event", "generate_lead", {
-        score: result.weightedTotal,
-        band: pick(result.band.name, lang),
-      });
+      setSent({ id: data.id ?? null, emailed: Boolean(data.emailed) });
+      window.gtag?.("event", "generate_lead", { score: report.score, band: report.bandId });
+    } catch {
+      setError(t.submitError);
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (!result) {
-    return (
-      <div>
-        <p className="font-display font-black text-2xl text-text-main mb-4">{t.noResultsTitle}</p>
-        <p className="font-body text-text-main/80 leading-relaxed mb-8">{t.noResultsBody}</p>
-        <Link
-          href="/assessment"
-          className="inline-block bg-brand-orange text-black font-body font-semibold px-6 py-3 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-        >
-          {t.takeAssessment}
-        </Link>
-      </div>
-    );
-  }
+  if (!report) return <NoResults lang={lang} />;
 
-  // The landing page leads with communication & safety, so the report always
-  // answers that first — as one part of the overall score, not the whole of it.
-  const safetyComm = result.pillarResults
-    .filter((p) => p.pillar.id === "parentComm" || p.pillar.id === "safety")
-    .reduce((acc, p) => ({ raw: acc.raw + p.raw, maxRaw: acc.maxRaw + p.maxRaw }), { raw: 0, maxRaw: 0 });
-  const personalizedNextStep = personalizedStepFor(result.weakestPillar, pick(result.weakestPillar.nextStep, lang));
-  // Two shipped products map to two pillars: Chekki Schools (a school-run
-  // tool) fits parentComm, the parent-facing homework helper fits teaching
-  // — pitched as a partnership since the director isn't the end user, they'd
-  // be introducing it to parents. Every other pillar routes to a call.
-  const isSchoolsFit = result.weakestPillar.id === "parentComm";
-  const isHomeworkFit = result.weakestPillar.id === "teaching";
-  const closingText = isSchoolsFit
-    ? t.closingSchools(pick(result.weakestPillar.name, lang))
-    : isHomeworkFit
-    ? t.closingHomework
-    : t.closingOther(pick(result.weakestPillar.name, lang));
-  const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL;
+  const fields: [string, string, (v: string) => void, string, string][] = [
+    [t.nameLabel, name, setName, "text", "name"],
+    [t.hagwonLabel, hagwon, setHagwon, "text", "organization"],
+    [t.emailLabel, email, setEmail, "email", "email"],
+    [t.contactLabel, contact, setContact, "text", "tel"],
+  ];
 
   return (
     <div>
-      <Link
-        href="/"
-        className="font-body text-sm text-text-muted hover:text-text-main transition-colors mb-6 inline-block"
-      >
-        ← {t.backHome}
-      </Link>
-      <p className="font-body text-sm text-brand-orange mb-3">{t.yourResult}</p>
-      <p className="font-display font-black text-6xl text-text-main mb-2">{result.weightedTotal}</p>
-      <p className="font-body text-text-muted mb-8">{t.outOf}</p>
+      <BackHome lang={lang} />
+      <Report report={report} full={Boolean(sent)} bookSubject={hagwon || name || email}>
+        {sent && (
+          <div className="mt-8 rounded-md bg-line-soft px-4 py-3">
+            <p className="font-bold">{sent.emailed ? t.thanks : t.thanksNoEmail}</p>
+            {sent.id && (
+              <p className="mt-2 text-[14px] text-ink-2">
+                {t.permalinkLabel}
+                <br />
+                <a href={`/results/${sent.id}`} className="break-all font-semibold text-line-ink underline">
+                  {window.location.origin}/results/{sent.id}
+                </a>
+              </p>
+            )}
+          </div>
+        )}
+      </Report>
 
-      <h1 className="font-display font-black text-3xl text-text-main mb-2">{pick(result.band.name, lang)}</h1>
-      <p className="font-body text-text-main/90 leading-relaxed mb-4">{pick(result.band.intro, lang)}</p>
-      <p className="font-body text-text-main/80 leading-relaxed mb-4">{pick(result.band.blurb, lang)}</p>
-      <p className="font-body text-xs text-text-muted leading-relaxed mb-8">{t.disclaimer}</p>
-
-      <div className="border-t border-brand-border pt-6 mb-10">
-        <div className="flex justify-between items-baseline mb-2">
-          <p className="font-display font-black text-xl text-text-main">{t.safetyCommLabel}</p>
-          <p className="font-body text-text-muted">{safetyComm.raw}/{safetyComm.maxRaw}</p>
-        </div>
-        <p className="font-body text-sm text-text-main/80 leading-relaxed">{t.safetyCommNote}</p>
-      </div>
-
-      <div className="border-t border-brand-border pt-6 mb-10">
-        <p className="font-body text-sm text-brand-orange mb-2">{t.weakestPillarLabel}</p>
-        <p className="font-display font-black text-xl text-text-main mb-2">{pick(result.weakestPillar.name, lang)}</p>
-        <p className="font-body text-text-main/80 leading-relaxed mb-3">{pick(result.weakestPillar.weakestBlurb, lang)}</p>
-        <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed">{personalizedNextStep}</p>
-        <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-2">{pick(result.weakestPillar.nextStep2, lang)}</p>
-      </div>
-
-      {submitted && (
-        <div className="border-t border-brand-border pt-6 mb-10">
-          <p className="font-body text-sm text-brand-orange mb-4">{t.allPillars}</p>
-          <div className="space-y-5">
-            {result.pillarResults
-              .filter(({ pillar }) => pillar.id !== result.weakestPillar.id)
-              .map(({ pillar, raw, maxRaw, isStrong }) => (
-              <div key={pillar.id}>
-                <div className="flex justify-between font-body text-sm text-text-main mb-1">
-                  <span>{pick(pillar.name, lang)}</span>
-                  <span className="text-text-muted">{raw}/{maxRaw}</span>
-                </div>
-                {isStrong ? (
-                  <p className="font-body text-sm text-emerald-600 dark:text-emerald-400 leading-relaxed">{t.strongNote}</p>
-                ) : (
-                  <>
-                    <p className="font-body text-sm text-text-main/70 leading-relaxed">{pick(pillar.weakestBlurb, lang)}</p>
-                    <p className="font-body text-sm text-brand-orange font-semibold leading-relaxed mt-1">
-                      {personalizedStepFor(pillar, pick(pillar.nextStep, lang))}
-                    </p>
-                  </>
-                )}
-              </div>
+      {!sent && (
+        <form onSubmit={submit} noValidate className="mt-10 border-t border-rule pt-7">
+          <p className="mb-5 text-ink-2">{t.leadIn}</p>
+          <div className="mb-5 space-y-4">
+            {fields.map(([label, value, set, type, autoComplete]) => (
+              <label key={autoComplete} className="block">
+                <span className="caption mb-1.5 block">{label}</span>
+                <input
+                  className="field"
+                  type={type}
+                  autoComplete={autoComplete}
+                  required={type === "email"}
+                  value={value}
+                  onChange={(e) => set(e.target.value)}
+                />
+              </label>
             ))}
+            <label className="block">
+              <span className="caption mb-1.5 block">{t.feedbackLabel}</span>
+              <textarea className="field py-3" rows={3} value={feedback} onChange={(e) => setFeedback(e.target.value)} />
+            </label>
           </div>
-        </div>
-      )}
-
-      {!submitted ? (
-        <div className="border-t border-brand-border pt-6">
-          <p className="font-body text-sm text-text-main/70 mb-4">{t.leadIn}</p>
-          <div className="space-y-3 mb-4">
-            <input className="w-full bg-brand-card border border-brand-border rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder={t.namePlaceholder}
-              value={name} onChange={(e) => setName(e.target.value)} />
-            <input className="w-full bg-brand-card border border-brand-border rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder={t.hagwonPlaceholder}
-              value={hagwon} onChange={(e) => setHagwon(e.target.value)} />
-            <input type="email" required className="w-full bg-brand-card border border-brand-border rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder={t.emailPlaceholder}
-              value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input className="w-full bg-brand-card border border-brand-border rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder={t.contactPlaceholder}
-              value={contact} onChange={(e) => setContact(e.target.value)} />
-            <textarea className="w-full bg-brand-card border border-brand-border rounded-2xl px-4 py-2 font-body focus-visible:outline-none focus:ring-2 focus:ring-brand-orange focus:ring-offset-2 focus:ring-offset-brand-dark" placeholder={t.feedbackPlaceholder} rows={3}
-              value={feedback} onChange={(e) => setFeedback(e.target.value)} />
-          </div>
-          {error && <p className="font-body text-sm text-red-400 mb-3">{error}</p>}
-          <button
-            onClick={submit}
-            disabled={!email || submitting}
-            className={`bg-brand-orange text-black font-body font-semibold px-6 py-3 rounded-full transition-transform active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark disabled:active:scale-100 ${
-              submitting ? "opacity-70 cursor-wait" : !email ? "opacity-40 cursor-not-allowed" : "hover:opacity-90"
-            }`}
-          >
-            {submitting ? t.submittingBtn : t.submitBtn}
-          </button>
-        </div>
-      ) : (
-        <div>
-          <p className="font-body text-brand-orange mb-3">{t.thanks}</p>
-          {reportId && (
-            <p className="font-body text-xs text-text-muted leading-relaxed mb-4">
-              {t.permalinkLabel}
-              <br />
-              <a href={`/results/${reportId}`} className="text-brand-orange hover:underline break-all">
-                {typeof window !== "undefined" ? window.location.origin : ""}/results/{reportId}
-              </a>
+          {error && (
+            <p role="alert" className="mb-3 text-[14px] font-bold text-wrong">
+              {error}
             </p>
           )}
-          <p className="font-body text-sm text-text-main/70 leading-relaxed mb-4">{closingText}</p>
-          <div className="flex flex-wrap gap-6">
-            <div>
-              <a
-                href={isHomeworkFit ? "https://chekkiai.com" : "https://chekkiai.com/schools"}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-              >
-                {t.ctaTry}
-              </a>
-              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaTryCaption}</p>
-            </div>
-            <div>
-              {bookingUrl ? (
-                <a
-                  href={bookingUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-                >
-                  {t.ctaBook}
-                </a>
-              ) : (
-                process.env.NEXT_PUBLIC_NOTIFY_EMAIL && (
-                  <a
-                    href={`mailto:${process.env.NEXT_PUBLIC_NOTIFY_EMAIL}?subject=${encodeURIComponent(
-                      `${t.ctaBook} — ${hagwon || name || email}`
-                    )}&body=${encodeURIComponent(t.ctaBookBody(result.weightedTotal))}`}
-                    className="inline-block bg-brand-orange text-black font-body text-sm font-semibold px-5 py-2.5 rounded-full transition-transform active:scale-[0.98] hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark"
-                  >
-                    {t.ctaBook}
-                  </a>
-                )
-              )}
-              <p className="font-body text-xs text-text-muted mt-1.5">{t.ctaBookCaption(pick(result.weakestPillar.name, lang))}</p>
-            </div>
-          </div>
-        </div>
+          <button type="submit" disabled={!email || submitting} className={`btn ${submitting ? "cursor-wait" : ""}`}>
+            {submitting ? t.submittingBtn : t.submitBtn}
+          </button>
+        </form>
       )}
     </div>
   );

@@ -2,26 +2,23 @@ import { LangProvider } from "@/lib/i18n";
 import LangToggle from "@/components/LangToggle";
 import ThemeToggle from "@/components/ThemeToggle";
 
-// The quiz/report pages share this narrow card shell. /admin lives outside
-// this route group so its dashboard isn't squeezed into a 576px card.
+// The quiz/report pages share this single reading column. /admin lives
+// outside this route group so its dashboard gets the full width.
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="max-w-xl mx-auto px-6 py-16">
-      <LangProvider>
-        <div className="flex justify-end items-center gap-2 mb-6">
-          <ThemeToggle />
-          <LangToggle />
-        </div>
-        <div className="bg-brand-card border border-brand-border rounded-3xl p-6 md:p-8">{children}</div>
-        <footer className="text-center mt-10">
-          <a
-            href="https://chekkiai.com"
-            className="font-display font-black text-sm text-text-muted hover:text-text-main transition-colors"
-          >
-            Chekki<span className="text-brand-orange">ai</span>
+    <LangProvider>
+      <div className="mx-auto max-w-2xl px-4 pb-12 pt-4">
+        <header className="mb-8 flex items-center justify-between gap-2">
+          <a href="https://chekkiai.com" className="text-[18px] font-extrabold tracking-[-0.02em]">
+            Chekki<span className="text-line-ink">ai</span>
           </a>
-        </footer>
-      </LangProvider>
-    </main>
+          <div className="flex items-center gap-1">
+            <ThemeToggle />
+            <LangToggle />
+          </div>
+        </header>
+        <main>{children}</main>
+      </div>
+    </LangProvider>
   );
 }

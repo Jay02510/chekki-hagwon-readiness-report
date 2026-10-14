@@ -1,20 +1,9 @@
 import Script from "next/script";
-import { Bricolage_Grotesque, Onest } from "next/font/google";
+// Self-hosted Pretendard, same package and subset chekki-ai ships.
+import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
 import "./globals.css";
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-
-const bricolage = Bricolage_Grotesque({
-  subsets: ["latin"],
-  weight: "variable",
-  variable: "--font-bricolage",
-});
-
-const onest = Onest({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  variable: "--font-onest",
-});
 
 export const metadata = {
   title: "Hagwon AI Readiness Index",
@@ -25,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     // suppressHydrationWarning: the inline script below sets data-theme before
     // React hydrates, so the server and client <html> attributes differ.
-    <html lang="en" className={`${bricolage.variable} ${onest.variable}`} suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Applies a saved theme choice before first paint so there's no flash. */}
         <script
@@ -45,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Script>
         </>
       )}
-      <body className="font-body min-h-screen bg-brand-dark text-text-main">{children}</body>
+      <body className="min-h-screen font-sans text-[15px] font-medium leading-[1.625] antialiased">{children}</body>
     </html>
   );
 }

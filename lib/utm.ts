@@ -7,15 +7,19 @@ export type Utm = { source?: string; medium?: string; campaign?: string };
 // with no UTM params (or a different campaign) shouldn't erase how they
 // originally arrived.
 export function captureUtm(): void {
-  if (localStorage.getItem(KEY)) return;
-  const params = new URLSearchParams(window.location.search);
-  const utm: Utm = {
-    source: params.get("utm_source") ?? undefined,
-    medium: params.get("utm_medium") ?? undefined,
-    campaign: params.get("utm_campaign") ?? undefined,
-  };
-  if (utm.source || utm.medium || utm.campaign) {
-    localStorage.setItem(KEY, JSON.stringify(utm));
+  try {
+    if (localStorage.getItem(KEY)) return;
+    const params = new URLSearchParams(window.location.search);
+    const utm: Utm = {
+      source: params.get("utm_source") ?? undefined,
+      medium: params.get("utm_medium") ?? undefined,
+      campaign: params.get("utm_campaign") ?? undefined,
+    };
+    if (utm.source || utm.medium || utm.campaign) {
+      localStorage.setItem(KEY, JSON.stringify(utm));
+    }
+  } catch {
+    // storage blocked — attribution just won't be recorded
   }
 }
 

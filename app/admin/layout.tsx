@@ -1,9 +1,9 @@
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="min-h-screen bg-brand-dark text-text-main px-6 py-10 md:px-12">
+    <main className="min-h-screen px-4 py-8 md:px-12">
       <div className="max-w-6xl mx-auto">
-        <p className="font-display font-black text-sm text-text-muted mb-8">
-          Chekki<span className="text-brand-orange">ai</span> · Admin
+        <p className="mb-6 text-[15px] font-extrabold text-ink-2">
+          Chekki<span className="text-line-ink">ai</span> · Admin
         </p>
         {children}
       </div>

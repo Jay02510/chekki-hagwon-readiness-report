@@ -6,13 +6,15 @@ export default function LangToggle() {
   const { lang, setLang } = useLang();
 
   return (
-    <div className="inline-flex bg-brand-card border border-brand-border rounded-full p-1 text-xs font-body">
+    <div className="inline-flex rounded-md bg-sunken p-0.5 ring-1 ring-inset ring-rule">
       {(["en", "ko"] as const).map((l) => (
         <button
           key={l}
           onClick={() => setLang(l)}
-          className={`px-3 py-1 rounded-full transition-colors ${
-            lang === l ? "bg-brand-orange text-black font-semibold" : "text-text-muted"
+          aria-pressed={lang === l}
+          lang={l}
+          className={`min-h-10 rounded px-3 text-[14px] font-semibold transition-colors ${
+            lang === l ? "bg-sign text-on-sign" : "text-ink-2 hover:text-ink"
           }`}
         >
           {l === "en" ? "EN" : "한국어"}

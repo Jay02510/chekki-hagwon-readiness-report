@@ -1,6 +1,6 @@
 // Pulls readiness_submissions from Firestore and prints score distribution +
 // weakest-pillar frequency, so band cutoffs (lib/scoring.ts) can eventually
-// be recut off real data instead of an even split of the 18-72 range.
+// be recut off real data instead of an even split of the 21-84 range.
 //
 // Usage: FIREBASE_SERVICE_ACCOUNT='<service account json>' node scripts/analyze-submissions.mjs
 import { initializeApp, cert } from "firebase-admin/app";
@@ -30,11 +30,14 @@ console.log(`Submissions: ${scores.length}`);
 console.log(`Min / P25 / Median / P75 / Max: ${scores[0]} / ${quartile(0.25)} / ${quartile(0.5)} / ${quartile(0.75)} / ${scores[scores.length - 1]}`);
 
 const byBand = {};
-for (const r of rows) byBand[r.band] = (byBand[r.band] ?? 0) + 1;
+// Ids, not the stored names — those are localized, so grouping on them would
+// count each band/pillar once per language. Docs from before bandId existed
+// fall back to the name.
+for (const r of rows) byBand[r.bandId ?? r.band] = (byBand[r.bandId ?? r.band] ?? 0) + 1;
 console.log("\nBy band:");
 for (const [band, count] of Object.entries(byBand)) console.log(`  ${band}: ${count}`);
 
 const byWeakest = {};
-for (const r of rows) byWeakest[r.weakestPillar] = (byWeakest[r.weakestPillar] ?? 0) + 1;
+for (const r of rows) byWeakest[r.weakestPillarId ?? r.weakestPillar] = (byWeakest[r.weakestPillarId ?? r.weakestPillar] ?? 0) + 1;
 console.log("\nWeakest pillar frequency:");
 for (const [pillar, count] of Object.entries(byWeakest)) console.log(`  ${pillar}: ${count}`);

@@ -49,6 +49,7 @@ export default function Assessment() {
       localStorage.setItem(PROGRESS_KEY, JSON.stringify({ step: step + 1, answers: next }));
     } else {
       localStorage.removeItem(PROGRESS_KEY);
+      window.gtag?.("event", "quiz_complete");
       localStorage.setItem("hagwon-readiness-answers", JSON.stringify(next));
       router.push("/results");
     }
@@ -63,43 +64,36 @@ export default function Assessment() {
   return (
     <div>
       {step > 0 ? (
-        <button
-          onClick={goBack}
-          className="font-body text-sm text-text-muted hover:text-text-main transition-colors mb-6"
-        >
+        <button onClick={goBack} className="back-link mb-4">
           ← {strings[lang].back}
         </button>
       ) : (
-        <Link
-          href="/"
-          className="font-body text-sm text-text-muted hover:text-text-main transition-colors mb-6 inline-block"
-        >
+        <Link href="/" className="back-link mb-4">
           ← {strings[lang].backHome}
         </Link>
       )}
       <ProgressBar current={step + 1} total={questions.length} />
       {/* Names the area each question belongs to, so questions outside the
           safety/communication framing on the landing page don't feel off-topic. */}
-      <p className="font-body text-sm text-brand-orange mb-3">
+      <p className="eyebrow mb-2">
         {strings[lang].pillarOf(pillarIndex + 1, pillars.length, pick(pillars[pillarIndex].name, lang))}
       </p>
-      <h2 className="font-display font-black text-2xl text-text-main mb-8 leading-snug">{pick(q.prompt, lang)}</h2>
+      <h2 className="mb-6 text-[22px] font-extrabold leading-[1.25] tracking-[-0.02em]">{pick(q.prompt, lang)}</h2>
       <div className="space-y-3">
         {q.options.map((opt) => (
           <button
             key={opt.label}
             onClick={() => choose(opt.label)}
-            className={`w-full text-left font-body px-5 py-4 border rounded-2xl transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-orange focus-visible:ring-offset-2 focus-visible:ring-offset-brand-dark ${
-              answers[q.id] === opt.label
-                ? "bg-brand-orange/10 border-brand-orange"
-                : "bg-brand-card border-brand-border hover:border-brand-orange/50"
+            aria-pressed={answers[q.id] === opt.label}
+            className={`min-h-14 w-full rounded-md px-5 py-3.5 text-left font-semibold transition-[transform,box-shadow] active:scale-[0.98] ${
+              answers[q.id] === opt.label ? "bg-line-soft ring-2 ring-inset ring-line" : "bg-surface ring-1 ring-inset ring-rule hover:ring-ink-3"
             }`}
           >
             {pick(opt.text, lang)}
           </button>
         ))}
       </div>
-      <p className="font-body text-xs text-text-muted mt-4">{strings[lang].noneMatchHint}</p>
+      <p className="caption mt-4">{strings[lang].noneMatchHint}</p>
     </div>
   );
 }

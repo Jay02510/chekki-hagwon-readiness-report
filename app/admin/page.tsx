@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { adminDb } from "@/lib/firebaseAdmin";
+import { bands } from "@/lib/scoring";
+import { pillars } from "@/lib/questions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,9 @@ type Submission = {
   feedback: string | null;
   score: number;
   band: string;
+  bandId?: string;
   weakestPillar: string;
+  weakestPillarId?: string;
   lang: "en" | "ko";
   utmSource: string | null;
   utmMedium: string | null;
@@ -19,16 +23,31 @@ type Submission = {
   createdAt: string;
 };
 
+// band/weakestPillar are stored in the visitor's language, so group on ids.
+// Docs from before bandId existed fall back to matching either language's name.
+function bandIdOf(r: Submission): string {
+  return r.bandId ?? bands.find((b) => b.name.en === r.band || b.name.ko === r.band)?.id ?? r.band;
+}
+function pillarIdOf(r: Submission): string {
+  return (
+    r.weakestPillarId ??
+    pillars.find((p) => p.name.en === r.weakestPillar || p.name.ko === r.weakestPillar)?.id ??
+    r.weakestPillar
+  );
+}
+const bandName = (id: string) => bands.find((b) => b.id === id)?.name.en ?? id;
+const pillarName = (id: string) => pillars.find((p) => p.id === id)?.name.en ?? id;
+
 function quartile(sorted: number[], p: number): number {
   return sorted[Math.min(sorted.length - 1, Math.floor(p * sorted.length))];
 }
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="bg-brand-card border border-brand-border rounded-2xl p-5">
-      <p className="text-xs uppercase tracking-wide text-text-muted mb-2">{label}</p>
-      <p className="font-display font-black text-2xl text-text-main">{value}</p>
-      {sub && <p className="text-xs text-text-muted mt-1">{sub}</p>}
+    <div className="card">
+      <p className="caption mb-1">{label}</p>
+      <p className="text-[22px] font-extrabold tracking-[-0.02em] tabular-nums">{value}</p>
+      {sub && <p className="caption mt-1 font-semibold">{sub}</p>}
     </div>
   );
 }
@@ -36,17 +55,17 @@ function StatCard({ label, value, sub }: { label: string; value: string; sub?: s
 function Breakdown({ title, entries }: { title: string; entries: [string, number][] }) {
   const max = Math.max(1, ...entries.map(([, c]) => c));
   return (
-    <div className="bg-brand-card border border-brand-border rounded-2xl p-5">
-      <p className="text-xs uppercase tracking-wide text-text-muted mb-3">{title}</p>
+    <div className="card">
+      <p className="caption mb-3">{title}</p>
       <div className="space-y-2">
-        {entries.length === 0 && <p className="text-sm text-text-muted">No data yet</p>}
+        {entries.length === 0 && <p className="text-[14px] text-ink-3">No data yet</p>}
         {entries.map(([label, count]) => (
-          <div key={label} className="flex items-center gap-3 text-sm">
-            <span className="w-32 shrink-0 truncate text-text-main">{label}</span>
-            <div className="flex-1 h-2 rounded-full bg-brand-border overflow-hidden">
-              <div className="h-full bg-brand-orange rounded-full" style={{ width: `${(count / max) * 100}%` }} />
+          <div key={label} className="flex items-center gap-3 text-[14px]">
+            <span className="w-40 shrink-0 truncate" title={label}>{label}</span>
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-sunken">
+              <div className="h-full rounded-full bg-line" style={{ width: `${(count / max) * 100}%` }} />
             </div>
-            <span className="w-6 text-right text-text-muted">{count}</span>
+            <span className="w-6 text-right tabular-nums text-ink-2">{count}</span>
           </div>
         ))}
       </div>
@@ -55,14 +74,16 @@ function Breakdown({ title, entries }: { title: string; entries: [string, number
 }
 
 const BAND_STYLES: Record<string, string> = {
-  "Traditional Hagwon": "bg-zinc-500/15 text-zinc-400",
-  Digitizing: "bg-amber-500/15 text-amber-400",
+  traditional: "text-ink-2 ring-1 ring-inset ring-rule",
+  digitizing: "bg-sunken text-ink-2",
+  techEnabled: "bg-line-soft text-line-ink",
+  aiReady: "bg-right-soft text-correct",
 };
 
-function BandBadge({ band }: { band: string }) {
+function BandBadge({ bandId }: { bandId: string }) {
   return (
-    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-semibold ${BAND_STYLES[band] ?? "bg-brand-orange/15 text-brand-orange"}`}>
-      {band}
+    <span className={`inline-block whitespace-nowrap rounded-md px-2 py-0.5 text-[13px] font-bold ${BAND_STYLES[bandId] ?? "text-ink-2"}`}>
+      {bandName(bandId)}
     </span>
   );
 }
@@ -78,8 +99,10 @@ export default async function AdminDashboard() {
   const bySource: Record<string, number> = {};
   const byDay: Record<string, number> = {};
   for (const r of rows) {
-    byBand[r.band] = (byBand[r.band] ?? 0) + 1;
-    byWeakest[r.weakestPillar] = (byWeakest[r.weakestPillar] ?? 0) + 1;
+    const band = bandName(bandIdOf(r));
+    const weakest = pillarName(pillarIdOf(r));
+    byBand[band] = (byBand[band] ?? 0) + 1;
+    byWeakest[weakest] = (byWeakest[weakest] ?? 0) + 1;
     byLang[r.lang || "en"] = (byLang[r.lang || "en"] ?? 0) + 1;
     bySource[r.utmSource || "(none)"] = (bySource[r.utmSource || "(none)"] ?? 0) + 1;
     const day = r.createdAt.slice(0, 10);
@@ -88,10 +111,11 @@ export default async function AdminDashboard() {
   const sortDesc = (m: Record<string, number>) => Object.entries(m).sort(([, a], [, b]) => b - a);
   const days = Object.entries(byDay).sort(([a], [b]) => b.localeCompare(a)).slice(0, 14);
   const todayCount = byDay[new Date().toISOString().slice(0, 10)] ?? 0;
+  const maxDay = Math.max(1, ...days.map(([, c]) => c));
 
   return (
     <div>
-      <p className="font-display font-black text-3xl text-text-main mb-8">Submissions</p>
+      <h1 className="mb-6 text-[28px] font-extrabold tracking-[-0.02em]">Submissions</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <StatCard label="Total" value={String(rows.length)} sub={`${todayCount} today`} />
@@ -114,59 +138,59 @@ export default async function AdminDashboard() {
       )}
 
       {days.length > 0 && (
-        <div className="bg-brand-card border border-brand-border rounded-2xl p-5 mb-10">
-          <p className="text-xs uppercase tracking-wide text-text-muted mb-3">Last 14 days</p>
+        <div className="card mb-10">
+          <p className="caption mb-3">Last 14 days</p>
           <div className="flex items-end gap-2 h-24">
             {[...days].reverse().map(([day, count]) => (
               <div key={day} className="flex-1 flex flex-col items-center gap-1" title={`${day}: ${count}`}>
                 <div
-                  className="w-full bg-brand-orange rounded-t"
-                  style={{ height: `${(count / Math.max(...days.map(([, c]) => c))) * 80}px` }}
+                  className="w-full rounded-t bg-line"
+                  style={{ height: `${(count / maxDay) * 80}px` }}
                 />
-                <span className="text-[10px] text-text-muted">{day.slice(5)}</span>
+                <span className="text-[12px] tabular-nums text-ink-3">{day.slice(5)}</span>
               </div>
             ))}
           </div>
         </div>
       )}
 
-      <div className="bg-brand-card border border-brand-border rounded-2xl overflow-hidden">
+      <div className="overflow-hidden rounded-md bg-surface ring-1 ring-inset ring-rule">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left border-collapse">
+          <table className="w-full border-collapse text-left text-[14px]">
             <thead>
-              <tr className="text-text-muted border-b border-brand-border">
-                <th className="py-3 px-4 font-medium">Date</th>
-                <th className="py-3 px-4 font-medium">Hagwon</th>
-                <th className="py-3 px-4 font-medium">Email</th>
-                <th className="py-3 px-4 font-medium">Contact</th>
-                <th className="py-3 px-4 font-medium">Lang</th>
-                <th className="py-3 px-4 font-medium">Score</th>
-                <th className="py-3 px-4 font-medium">Band</th>
-                <th className="py-3 px-4 font-medium">Weakest</th>
-                <th className="py-3 px-4 font-medium">Source</th>
-                <th className="py-3 px-4 font-medium">Feedback</th>
-                <th className="py-3 px-4 font-medium">Report</th>
+              <tr className="border-b border-rule text-[13px] text-ink-3">
+                <th className="py-3 px-4 font-bold">Date</th>
+                <th className="py-3 px-4 font-bold">Hagwon</th>
+                <th className="py-3 px-4 font-bold">Email</th>
+                <th className="py-3 px-4 font-bold">Contact</th>
+                <th className="py-3 px-4 font-bold">Lang</th>
+                <th className="py-3 px-4 font-bold">Score</th>
+                <th className="py-3 px-4 font-bold">Band</th>
+                <th className="py-3 px-4 font-bold">Weakest</th>
+                <th className="py-3 px-4 font-bold">Source</th>
+                <th className="py-3 px-4 font-bold">Feedback</th>
+                <th className="py-3 px-4 font-bold">Report</th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((r, i) => (
-                <tr key={r.id} className={`border-b border-brand-border/50 last:border-0 ${i % 2 === 1 ? "bg-white/[0.02]" : ""}`}>
-                  <td className="py-3 px-4 whitespace-nowrap text-text-muted">{new Date(r.createdAt).toLocaleDateString()}</td>
-                  <td className="py-3 px-4 font-medium">{r.hagwon || r.name}</td>
-                  <td className="py-3 px-4 text-text-muted">{r.email}</td>
-                  <td className="py-3 px-4 text-text-muted">{r.contact || "—"}</td>
-                  <td className="py-3 px-4 text-text-muted uppercase text-xs">{r.lang || "en"}</td>
-                  <td className="py-3 px-4 font-semibold">{r.score}/84</td>
+              {rows.map((r) => (
+                <tr key={r.id} className="border-b border-rule last:border-0">
+                  <td className="py-3 px-4 whitespace-nowrap text-ink-2">{new Date(r.createdAt).toLocaleDateString()}</td>
+                  <td className="py-3 px-4 font-bold">{r.hagwon || r.name}</td>
+                  <td className="py-3 px-4 text-ink-2">{r.email}</td>
+                  <td className="py-3 px-4 text-ink-2">{r.contact || "—"}</td>
+                  <td className="py-3 px-4 text-ink-2 uppercase text-xs">{r.lang || "en"}</td>
+                  <td className="py-3 px-4 font-semibold tabular-nums">{r.score}/84</td>
                   <td className="py-3 px-4">
-                    <BandBadge band={r.band} />
+                    <BandBadge bandId={bandIdOf(r)} />
                   </td>
-                  <td className="py-3 px-4 text-text-muted">{r.weakestPillar}</td>
-                  <td className="py-3 px-4 text-text-muted">{r.utmSource || "—"}</td>
-                  <td className="py-3 px-4 text-text-muted max-w-xs truncate" title={r.feedback ?? ""}>
+                  <td className="py-3 px-4 text-ink-2">{pillarName(pillarIdOf(r))}</td>
+                  <td className="py-3 px-4 text-ink-2">{r.utmSource || "—"}</td>
+                  <td className="py-3 px-4 text-ink-2 max-w-xs truncate" title={r.feedback ?? ""}>
                     {r.feedback || "—"}
                   </td>
                   <td className="py-3 px-4">
-                    <Link href={`/results/${r.id}`} className="text-brand-orange hover:underline">
+                    <Link href={`/results/${r.id}`} className="font-semibold text-line-ink hover:underline">
                       view
                     </Link>
                   </td>
@@ -174,7 +198,7 @@ export default async function AdminDashboard() {
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="py-8 px-4 text-center text-text-muted">
+                  <td colSpan={11} className="py-8 px-4 text-center text-ink-2">
                     No submissions yet.
                   </td>
                 </tr>

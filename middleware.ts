@@ -10,9 +10,9 @@ export function middleware(req: NextRequest) {
   }
 
   const auth = req.headers.get("authorization");
-  const providedPassword = auth?.startsWith("Basic ")
-    ? Buffer.from(auth.slice(6), "base64").toString().split(":")[1]
-    : undefined;
+  // Everything after the first ":" is the password, so passwords may contain ":".
+  const decoded = auth?.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString() : "";
+  const providedPassword = decoded.includes(":") ? decoded.slice(decoded.indexOf(":") + 1) : undefined;
   if (providedPassword !== password) {
     return new NextResponse("Auth required", {
       status: 401,

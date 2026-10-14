@@ -2,36 +2,113 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Dark is the default. Light applies when the OS prefers it, unless the
-   visitor picked a theme with ThemeToggle (data-theme on <html>). */
+/* Chekki's "Kitchen Table" tokens, copied from chekki-ai's tokens.css /
+   DESIGN.md so the quiz matches /schools, which links here. Light and dark
+   follow the device; ThemeToggle's data-theme on <html> overrides it. */
 :root {
-  --color-brand-dark: #050505;
-  --color-brand-card: #0f1014;
-  --color-brand-orange: #f97316;
-  --color-brand-border: rgba(255, 255, 255, 0.1);
-  --color-text-main: #f4f4f5;
-  --color-text-muted: #a1a1aa;
+  color-scheme: light;
+  --m-ground: #fbf6ee;
+  --m-surface: #ffffff;
+  --m-sunken: #f5ecdf;
+  --m-sign: #3a2c22;
+  --m-on-sign: #fff8f0;
+  --m-ink: #2b211a;
+  --m-ink-2: #5b4b3f;
+  --m-ink-3: #76665a;
+  --m-rule: #ebdfcf;
+  --m-line: #ef7c1c;
+  --m-line-ink: #a84d06;
+  --m-line-soft: #fdebd8;
+  --m-wrong: #bf3a20;
+  --m-right: #1b7a43;
+  --m-right-soft: #e1f3e6;
+  --m-tile: rgba(239, 124, 28, 0.1);
 }
 
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --color-brand-dark: #f8fafc;
-    --color-brand-card: #ffffff;
-    --color-brand-border: #e4e4e7;
-    --color-text-main: #18181b;
-    --color-text-muted: #52525b;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --m-ground: #17120f;
+    --m-surface: #221b16;
+    --m-sunken: #110d0b;
+    --m-sign: #2e241d;
+    --m-on-sign: #fff8f0;
+    --m-ink: #f7efe6;
+    --m-ink-2: #d3c4b5;
+    --m-ink-3: #a8988a;
+    --m-rule: #3a2f27;
+    --m-line: #f28a35;
+    --m-line-ink: #f6a560;
+    --m-line-soft: #3d2716;
+    --m-wrong: #ff7a66;
+    --m-right: #4cd48a;
+    --m-right-soft: #15301f;
+    --m-tile: rgba(242, 138, 53, 0.1);
   }
 }
 
-:root[data-theme="light"] {
-  --color-brand-dark: #f8fafc;
-  --color-brand-card: #ffffff;
-  --color-brand-border: #e4e4e7;
-  --color-text-main: #18181b;
-  --color-text-muted: #52525b;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --m-ground: #17120f;
+  --m-surface: #221b16;
+  --m-sunken: #110d0b;
+  --m-sign: #2e241d;
+  --m-on-sign: #fff8f0;
+  --m-ink: #f7efe6;
+  --m-ink-2: #d3c4b5;
+  --m-ink-3: #a8988a;
+  --m-rule: #3a2f27;
+  --m-line: #f28a35;
+  --m-line-ink: #f6a560;
+  --m-line-soft: #3d2716;
+  --m-wrong: #ff7a66;
+  --m-right: #4cd48a;
+  --m-right-soft: #15301f;
+  --m-tile: rgba(242, 138, 53, 0.1);
 }
 
 body {
-  background: var(--color-brand-dark);
-  color: var(--color-text-main);
+  /* The lamp-over-the-table glow chekki-ai calls .tile-ground. */
+  background: radial-gradient(120% 480px at 50% 0%, var(--m-tile), transparent 70%) no-repeat, var(--m-ground);
+  color: var(--m-ink);
+  caret-color: var(--m-line);
+  word-break: keep-all;
+}
+
+::selection {
+  background: var(--m-line);
+  color: #2b211a;
+}
+
+/* Orange itself is under 3:1 on cream, so focus uses the darker orange ink. */
+:focus-visible {
+  outline: 3px solid var(--m-line-ink);
+  outline-offset: 2px;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex min-h-12 items-center justify-center rounded-md bg-line px-6 text-[15px] font-extrabold text-on-line transition-[transform,filter] hover:brightness-95 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100;
+  }
+  .btn-outline {
+    @apply inline-flex min-h-12 items-center justify-center rounded-md bg-surface px-6 text-[15px] font-extrabold text-ink ring-1 ring-inset ring-rule transition-[transform,box-shadow] hover:ring-ink-3 active:scale-[0.98];
+  }
+  .back-link {
+    @apply inline-flex min-h-11 items-center text-[14px] font-semibold text-ink-2 hover:text-ink;
+  }
+  .caption {
+    @apply text-[13px] font-bold text-ink-3;
+  }
+  .eyebrow {
+    @apply text-[14px] font-bold text-line-ink;
+  }
+  .card {
+    @apply rounded-md bg-surface px-5 py-4 ring-1 ring-inset ring-rule;
+  }
+  .field {
+    @apply block min-h-12 w-full rounded-md bg-sunken px-4 text-[16px] text-ink outline-none ring-1 ring-inset ring-rule focus:ring-2 focus:ring-line;
+  }
+  .roundel {
+    @apply inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-surface text-[13px] font-extrabold tabular-nums ring-1 ring-inset ring-rule;
+  }
 }
